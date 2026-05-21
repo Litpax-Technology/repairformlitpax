@@ -485,6 +485,7 @@
   let repairId = '';
   let rCurrentStep = 1;
   let selectedRepairData = null;
+  let allPendingData = [];
 
   window.onload = function() {
     const now = new Date();
@@ -640,7 +641,7 @@
   function loadPendingRepairs() {
     document.getElementById('loadingBox').style.display = 'block';
     document.getElementById('errorBox').style.display = 'none';
-    document.getElementById('pendingList').innerHTML = '<div class="form-group" style="margin-bottom:0"><label>Repair ID / Customer Name select karo</label><select id="pendingDropdown" style="font-size:14px;padding:10px 14px;display:none" onchange="onDropdownSelect(this)"><option value="">-- Select Repair ID --</option></select></div>';
+    document.getElementById('pendingList').innerHTML = '';
     document.getElementById('selectedInfoBox').style.display = 'none';
     document.getElementById('d_selectedRepairId').value = '';
     document.getElementById('dNextBtn').disabled = true;
@@ -668,21 +669,29 @@
 
   function renderPendingList(data) {
     allPendingData = data;
+    const list = document.getElementById('pendingList');
+    list.innerHTML = '<div class="form-group"><label>Repair ID / Customer Name select karo</label><select id="pendingDropdown" style="font-size:14px;padding:10px 14px;width:100%" onchange="onDropdownSelect(this)"><option value="">-- Select Repair ID --</option></select></div>';
     const dropdown = document.getElementById('pendingDropdown');
-    if (!dropdown) return;
-    dropdown.innerHTML = '<option value="">-- Select Repair ID --</option>';
     data.forEach((row, idx) => {
       const opt = document.createElement('option');
       opt.value = idx;
       opt.textContent = row.repairId + ' — ' + row.customerName + ' (' + (row.category || '') + (row.batteryModel ? ' ' + row.batteryModel : '') + ') | Pending: ' + row.pendingQty;
       dropdown.appendChild(opt);
     });
-    dropdown.style.display = 'block';
   }
 
-  function selectPendingCard(card, row, idx) {
-    document.querySelectorAll('.pending-card').forEach(c => c.classList.remove('selected'));
-    card.classList.add('selected');
+  function onDropdownSelect(sel) {
+    if (!sel.value) {
+      document.getElementById('selectedInfoBox').style.display = 'none';
+      document.getElementById('dNextBtn').disabled = true;
+      document.getElementById('dNextBtn').style.opacity = '0.5';
+      return;
+    }
+    const row = allPendingData[parseInt(sel.value)];
+    selectPendingCard(row);
+  }
+
+  function selectPendingCard(row) {
     selectedRepairData = row;
     document.getElementById('d_selectedRepairId').value = row.repairId;
     document.getElementById('d_selectedRow').value = row.rowIndex;
