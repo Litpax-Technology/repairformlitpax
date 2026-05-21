@@ -199,8 +199,8 @@
         </div>
         <div class="form-grid">
           <div class="form-group">
-            <label>Sr. No. <span class="req">*</span></label>
-            <input type="text" id="r_srNo" placeholder="e.g. 001" required>
+            <label>Sr. No. (Auto)</label>
+            <input type="text" id="r_srNo" placeholder="Loading..." readonly style="background:#f0f6ff;border-color:#b3d0f7;color:var(--blue);font-weight:600">
           </div>
           <div class="form-group">
             <label>Receiving Date <span class="req">*</span></label>
@@ -480,7 +480,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyT2FxyAKk9qLxj-TpBKdLbdK8IS9bhvwYF_LRc6itSd00RAyz5faPFEUBEqiTnDFEz/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsol64Qf7Cux2szHdwGMZWu_CU6E8xSI_tQHRzajphl_YiHGy6O7OU0xISUmBJnGcn/exec';
 
   let repairId = '';
   let rCurrentStep = 1;
@@ -520,6 +520,26 @@
     showScreen('receiveScreen');
     repairId = generateRepairId();
     document.getElementById('repairIdDisplay').textContent = repairId;
+    fetchNextSrNo();
+  }
+
+  function fetchNextSrNo() {
+    document.getElementById('r_srNo').value = '';
+    document.getElementById('r_srNo').placeholder = 'Loading...';
+    window.handleSrNoData = function(result) {
+      document.getElementById('r_srNo').value = result.lastSrNo || 1;
+      document.getElementById('r_srNo').placeholder = '';
+    };
+    var oldScript = document.getElementById('srNoScript');
+    if (oldScript) oldScript.remove();
+    var script = document.createElement('script');
+    script.id = 'srNoScript';
+    script.onerror = function() {
+      document.getElementById('r_srNo').value = '';
+      document.getElementById('r_srNo').placeholder = 'Manual bharein';
+    };
+    script.src = APPS_SCRIPT_URL + '?action=getSrNo&callback=handleSrNoData';
+    document.body.appendChild(script);
   }
 
   function showDispatch() {
