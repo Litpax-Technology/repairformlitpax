@@ -354,7 +354,7 @@
             <input type="text" id="r_transportInward" placeholder="e.g. BlueDart AWB 123456">
           </div>
           <div class="form-group full">
-            <label>Problem Description</label>
+            <label>Receiving Remarks</label>
             <textarea id="r_remarks" placeholder="Additional info..."></textarea>
           </div>
         </div>
@@ -458,7 +458,7 @@
             <input type="text" id="d_anyCost" placeholder="e.g. ₹500 (parts replaced)">
           </div>
           <div class="form-group full">
-            <label>Remarks</label>
+            <label>Dispatch Remarks</label>
             <textarea id="d_remarks" placeholder="Additional info..."></textarea>
           </div>
         </div>
@@ -484,7 +484,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxAmOGbebMe5pr84wZnPvX-5QxM51VTWu4ghiTKa7KKQwncn2PHK4ECQmAty3zvnJfI/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzWdkZFl761Vav4X2-FdHUZMeGO9xDfk1c9wvbWuXz3QUy3FtXa3jg0CAqsvrcaNcPh/exec';
 
   let repairId = '';
   let rCurrentStep = 1;
@@ -673,7 +673,7 @@
       'Accepted By': document.getElementById('r_acceptedBy').value,
       'Estimated Dispatch Date': document.getElementById('r_estimatedDispatchDate').value,
       'Transport Details (Inward)': document.getElementById('r_transportInward').value,
-      'Remarks': document.getElementById('r_remarks').value,
+      'Receiving Remarks': document.getElementById('r_remarks').value,
     };
 
     // Sheet mein data bhejo
@@ -841,7 +841,7 @@
       'Transport Details (Outward)': document.getElementById('d_transportOutward').value,
       'Dispatched By': document.getElementById('d_dispatchedBy').value,
       'Any Cost': document.getElementById('d_anyCost').value,
-      'Remarks': document.getElementById('d_remarks').value,
+      'Dispatch Remarks': document.getElementById('d_remarks').value,
     };
 
     fetch(APPS_SCRIPT_URL, {method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
