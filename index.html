@@ -138,11 +138,26 @@
   .error-box{background:#fff0ec;border:1.5px solid var(--danger);border-radius:8px;padding:12px 16px;font-size:13px;color:#c0392b;margin-bottom:14px;display:none;}
   .btn-pdf{padding:12px 28px;border-radius:8px;border:none;background:#e74c3c;color:white;font-size:14px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;margin-right:8px;}
   @media print{
-    .header,.steps-nav,.nav-btns,.btn-home,.btn-new-entry,.btn-pdf,#toast{display:none!important;}
-    .success-screen{display:block!important;padding:0;}
-    body{background:white;}
-    .card{box-shadow:none;border:1px solid #ddd;}
+    *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;}
+    body{background:white!important;margin:0;padding:0;}
+    .header,.steps-nav,.nav-btns,.btn-home,.btn-new-entry,.btn-pdf,.btn-new-entry,#toast,.screen-header{display:none!important;}
+    .main{padding:0!important;max-width:100%!important;}
+    .screen{display:none!important;}
+    #receiveScreen{display:block!important;}
+    .success-screen{display:block!important;padding:20px!important;text-align:left!important;}
+    .card{box-shadow:none!important;border:1px solid #ddd!important;break-inside:avoid;}
+    .receipt-header{display:flex!important;}
+    .big-id{font-size:14px!important;padding:6px 12px!important;}
   }
+  .receipt-header{display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid #1a5fd8;padding-bottom:12px;margin-bottom:16px;}
+  .receipt-logo{font-size:22px;font-weight:800;color:#1a5fd8;letter-spacing:2px;}
+  .receipt-title{font-size:11px;color:#5a6080;}
+  .receipt-table{width:100%;border-collapse:collapse;margin-top:8px;}
+  .receipt-table td{padding:7px 10px;border:1px solid #dde1f0;font-size:12px;}
+  .receipt-table td:first-child{font-weight:600;background:#f7f8fc;width:40%;color:#5a6080;}
+  .receipt-table td:last-child{color:#111827;}
+  .receipt-section{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#8890b0;padding:8px 10px;background:#f7f8fc;border:1px solid #dde1f0;border-bottom:none;}
+  .receipt-footer{margin-top:16px;padding-top:10px;border-top:1px solid #dde1f0;display:flex;justify-content:space-between;font-size:10px;color:#8890b0;}
 </style>
 </head>
 <body>
@@ -371,15 +386,32 @@
 
     <!-- Receive Success -->
     <div class="success-screen" id="receiveSuccess">
-      <div class="success-icon receive">📥</div>
-      <h2>Battery Received!</h2>
-      <p>Entry save ho gayi — Repair ID note karo:</p>
-      <div class="big-id receive" id="successReceiveId"></div>
-      <p class="id-note">Ye ID customer ko share karo</p>
-      <div class="card" style="text-align:left;margin-bottom:20px;" id="receiveSummary"></div>
-      <button class="btn-pdf" onclick="printReceipt()">🖨️ Download PDF</button>
-      <button class="btn-home" onclick="goHome()">🏠 Home</button>
-      <button class="btn-new-entry" onclick="resetReceive()">+ Nayi Entry</button>
+      <div style="background:white;border-radius:12px;border:1px solid #dde1f0;padding:24px;margin-bottom:16px;">
+        <div class="receipt-header">
+          <div>
+            <div class="receipt-logo">LITPAX</div>
+            <div class="receipt-title">Battery / Charger Service Center</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11px;color:#5a6080;">Service Receipt</div>
+            <div id="receiptDate" style="font-size:11px;color:#8890b0;"></div>
+          </div>
+        </div>
+        <div style="background:#e8f0fe;border-radius:6px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">
+          <span style="font-size:11px;color:#1a5fd8;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Repair ID</span>
+          <span id="successReceiveId" style="font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:700;color:#1a5fd8;"></span>
+        </div>
+        <div id="receiveSummary"></div>
+        <div class="receipt-footer">
+          <span>Litpax Technology — Service Management System</span>
+          <span id="receiptFooterDate"></span>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="btn-pdf" onclick="printReceipt()">🖨️ Print / Save PDF</button>
+        <button class="btn-home" onclick="goHome()">🏠 Home</button>
+        <button class="btn-new-entry" onclick="resetReceive()">+ New Entry</button>
+      </div>
     </div>
   </div>
 
@@ -687,37 +719,42 @@
     // Sheet mein data bhejo
     fetch(APPS_SCRIPT_URL, {method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
 
-    // PDF generate karo aur Drive mein bhejo
-    try {
-      const htmlContent = generateReceiptHTML(data);
-      const blob = new Blob([htmlContent], {type: 'text/html'});
-      const reader = new FileReader();
-      reader.onload = function() {
-        const base64 = reader.result.split(',')[1];
-        const pdfData = {
-          action: 'savePDF',
-          fileName: repairId + '_receipt.html',
-          base64Data: base64,
-          mimeType: 'text/html',
-          repairId: repairId
-        };
-        fetch(APPS_SCRIPT_URL, {method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(pdfData)});
-      };
-      reader.readAsDataURL(blob);
-    } catch(err) {
-      console.log('PDF save error:', err);
-    }
-
     document.getElementById('rSection3').classList.remove('active');
     document.getElementById('receiveSuccess').style.display = 'block';
     document.getElementById('successReceiveId').textContent = repairId;
+    const now = new Date();
+    const dateStr = now.toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
+    const timeStr = now.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+    document.getElementById('receiptDate').textContent = dateStr + ' ' + timeStr;
+    document.getElementById('receiptFooterDate').textContent = dateStr + ' ' + timeStr;
     document.getElementById('receiveSummary').innerHTML = `
-      <div class="summary-row"><span>Repair ID</span><span style="color:var(--blue);font-family:'IBM Plex Mono',monospace;font-weight:700">${data['Repair ID']}</span></div>
-      <div class="summary-row"><span>Customer</span><span>${data['Customer Name']}</span></div>
-      <div class="summary-row"><span>Contact</span><span>${data['Contact No']}</span></div>
-      <div class="summary-row"><span>Product</span><span>${data['Category']} — ${data['Battery Model'] || data['Battery Type']}</span></div>
-      <div class="summary-row"><span>Problem</span><span>${data['Problem Type']}</span></div>
-      <div class="summary-row"><span>Received By</span><span>${data['Received By']}</span></div>`;
+      <div class="receipt-section">Customer Details</div>
+      <table class="receipt-table">
+        <tr><td>Customer Name</td><td>${data['Customer Name']}</td></tr>
+        <tr><td>Contact No.</td><td>${data['Contact No']}</td></tr>
+        <tr><td>Email</td><td>${data['Email'] || '—'}</td></tr>
+      </table>
+      <div class="receipt-section" style="margin-top:8px;">Product Details</div>
+      <table class="receipt-table">
+        <tr><td>Category</td><td>${data['Category']}</td></tr>
+        <tr><td>Battery Type</td><td>${data['Battery Type'] || '—'}</td></tr>
+        <tr><td>Battery Model (Voltage)</td><td>${data['Battery Model'] || '—'}</td></tr>
+        <tr><td>Charger Model</td><td>${data['Charger Model'] || '—'}</td></tr>
+        <tr><td>Battery Sr. No.</td><td>${data['Battery Sr No'] || '—'}</td></tr>
+        <tr><td>Received Qty</td><td>${data['Received Qty']}</td></tr>
+        <tr><td>Received Mode</td><td>${data['Received Mode'] || '—'}</td></tr>
+      </table>
+      <div class="receipt-section" style="margin-top:8px;">Service Details</div>
+      <table class="receipt-table">
+        <tr><td>Problem Type</td><td>${data['Problem Type']}</td></tr>
+        <tr><td>Remarks</td><td>${data['Problem Description'] || '—'}</td></tr>
+        <tr><td>Warranty</td><td>${data['Warranty'] || '—'}</td></tr>
+        <tr><td>Warranty Claim</td><td>${data['Warranty Claim Status'] || '—'}</td></tr>
+        <tr><td>Receiving Date</td><td>${data['Receiving Date']}</td></tr>
+        <tr><td>Est. Dispatch Date</td><td>${data['Estimated Dispatch Date'] || '—'}</td></tr>
+        <tr><td>Received By</td><td>${data['Received By']}</td></tr>
+        <tr><td>Accepted By</td><td>${data['Accepted By'] || '—'}</td></tr>
+      </table>`;
     submitBtn.disabled = false;
     submitBtn.textContent = 'Submit Entry ✓';
     window.scrollTo(0,0);
