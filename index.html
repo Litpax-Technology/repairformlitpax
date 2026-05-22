@@ -199,8 +199,8 @@
         </div>
         <div class="form-grid">
           <div class="form-group">
-            <label>Sr. No. (Auto)</label>
-            <input type="text" id="r_srNo" placeholder="Loading..." readonly style="background:#f0f6ff;border-color:#b3d0f7;color:var(--blue);font-weight:600">
+            <label>Sr. No. <span class="req">*</span></label>
+            <input type="text" id="r_srNo" placeholder="e.g. 001" required>
           </div>
           <div class="form-group">
             <label>Receiving Date <span class="req">*</span></label>
@@ -258,7 +258,7 @@
             </select>
           </div>
           <div class="form-group">
-            <label>Battery Model</label>
+            <label>Battery Model (Voltage)</label>
             <input type="text" id="r_batteryModel" placeholder="e.g. LFP-48V-100AH">
           </div>
           <div class="form-group">
@@ -303,7 +303,7 @@
             </select>
           </div>
           <div class="form-group full">
-            <label>Problem Description <span class="req">*</span></label>
+            <label>Remarks <span class="req">*</span></label>
             <textarea id="r_problemDesc" placeholder="Customer ne kya bataya..." required></textarea>
           </div>
         </div>
@@ -354,7 +354,7 @@
             <input type="text" id="r_transportInward" placeholder="e.g. BlueDart AWB 123456">
           </div>
           <div class="form-group full">
-            <label>Remarks</label>
+            <label>Problem Description</label>
             <textarea id="r_remarks" placeholder="Additional info..."></textarea>
           </div>
         </div>
@@ -453,6 +453,10 @@
             <label>Dispatched By <span class="req">*</span></label>
             <input type="text" id="d_dispatchedBy" placeholder="Staff name" required>
           </div>
+          <div class="form-group">
+            <label>Any Cost / Repair Cost</label>
+            <input type="text" id="d_anyCost" placeholder="e.g. ₹500 (parts replaced)">
+          </div>
           <div class="form-group full">
             <label>Remarks</label>
             <textarea id="d_remarks" placeholder="Additional info..."></textarea>
@@ -480,12 +484,11 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsol64Qf7Cux2szHdwGMZWu_CU6E8xSI_tQHRzajphl_YiHGy6O7OU0xISUmBJnGcn/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyENxzCfjiALlA7GjGm5OJmBZb8TgJAWl80WoLnEYeFtwhuCzKjwDw5yStdMG_Eipe/exec';
 
   let repairId = '';
   let rCurrentStep = 1;
   let selectedRepairData = null;
-  let allPendingData = [];
 
   window.onload = function() {
     const now = new Date();
@@ -520,26 +523,6 @@
     showScreen('receiveScreen');
     repairId = generateRepairId();
     document.getElementById('repairIdDisplay').textContent = repairId;
-    fetchNextSrNo();
-  }
-
-  function fetchNextSrNo() {
-    document.getElementById('r_srNo').value = '';
-    document.getElementById('r_srNo').placeholder = 'Loading...';
-    window.handleSrNoData = function(result) {
-      document.getElementById('r_srNo').value = result.lastSrNo || 1;
-      document.getElementById('r_srNo').placeholder = '';
-    };
-    var oldScript = document.getElementById('srNoScript');
-    if (oldScript) oldScript.remove();
-    var script = document.createElement('script');
-    script.id = 'srNoScript';
-    script.onerror = function() {
-      document.getElementById('r_srNo').value = '';
-      document.getElementById('r_srNo').placeholder = 'Manual bharein';
-    };
-    script.src = APPS_SCRIPT_URL + '?action=getPending&callback=handleSrNoData';
-    document.body.appendChild(script);
   }
 
   function showDispatch() {
@@ -595,8 +578,56 @@
     return valid;
   }
 
-  function submitReceive() {
+  function generateReceiptHTML(data) {
+    return `
+      <html><head><style>
+        body{font-family:Arial,sans-serif;padding:20px;color:#111;}
+        h2{color:#1a5fd8;border-bottom:2px solid #1a5fd8;padding-bottom:8px;}
+        .logo{font-weight:800;font-size:18px;letter-spacing:1px;color:#1a5fd8;}
+        table{width:100%;border-collapse:collapse;margin-top:16px;}
+        td{padding:8px 12px;border:1px solid #dde1f0;font-size:13px;}
+        td:first-child{font-weight:600;background:#f7f8fc;width:40%;}
+        .repid{font-size:16px;font-weight:800;color:#1a5fd8;letter-spacing:1px;}
+        .footer{margin-top:20px;font-size:11px;color:#888;text-align:center;}
+      </style></head><body>
+        <div class="logo">LITPAX</div>
+        <h2>Battery Receiving Receipt</h2>
+        <p class="repid">Repair ID: ${data['Repair ID']}</p>
+        <table>
+          <tr><td>Sr. No.</td><td>${data['Sr No']}</td></tr>
+          <tr><td>Receiving Date</td><td>${data['Receiving Date']}</td></tr>
+          <tr><td>Customer Name</td><td>${data['Customer Name']}</td></tr>
+          <tr><td>Contact No.</td><td>${data['Contact No']}</td></tr>
+          <tr><td>Email</td><td>${data['Email'] || '—'}</td></tr>
+          <tr><td>Category</td><td>${data['Category']}</td></tr>
+          <tr><td>Battery Type</td><td>${data['Battery Type'] || '—'}</td></tr>
+          <tr><td>Battery Model (Voltage)</td><td>${data['Battery Model'] || '—'}</td></tr>
+          <tr><td>Charger Model</td><td>${data['Charger Model'] || '—'}</td></tr>
+          <tr><td>Battery Sr. No.</td><td>${data['Battery Sr No'] || '—'}</td></tr>
+          <tr><td>Received Qty</td><td>${data['Received Qty']}</td></tr>
+          <tr><td>Received Mode</td><td>${data['Received Mode'] || '—'}</td></tr>
+          <tr><td>Problem Type</td><td>${data['Problem Type']}</td></tr>
+          <tr><td>Remarks</td><td>${data['Problem Description'] || '—'}</td></tr>
+          <tr><td>Problem Description</td><td>${data['Remarks'] || '—'}</td></tr>
+          <tr><td>Warranty</td><td>${data['Warranty'] || '—'}</td></tr>
+          <tr><td>Warranty Claim</td><td>${data['Warranty Claim Status'] || '—'}</td></tr>
+          <tr><td>Received By</td><td>${data['Received By']}</td></tr>
+          <tr><td>Accepted By</td><td>${data['Accepted By'] || '—'}</td></tr>
+          <tr><td>Est. Dispatch Date</td><td>${data['Estimated Dispatch Date'] || '—'}</td></tr>
+          <tr><td>Transport (Inward)</td><td>${data['Transport Details (Inward)'] || '—'}</td></tr>
+        </table>
+        <div class="footer">Generated on ${new Date().toLocaleString('en-IN')} — Litpax Service Management</div>
+      </body></html>
+    `;
+  }
+
+  async function submitReceive() {
     if (!validateSection('rSection3')) return;
+
+    const submitBtn = document.querySelector('.btn-submit-receive');
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Submitting...';
+
     const data = {
       action: 'receive',
       'Repair ID': repairId,
@@ -624,7 +655,29 @@
       'Remarks': document.getElementById('r_remarks').value,
     };
 
+    // Sheet mein data bhejo
     fetch(APPS_SCRIPT_URL, {method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+
+    // PDF generate karo aur Drive mein bhejo
+    try {
+      const htmlContent = generateReceiptHTML(data);
+      const blob = new Blob([htmlContent], {type: 'text/html'});
+      const reader = new FileReader();
+      reader.onload = function() {
+        const base64 = reader.result.split(',')[1];
+        const pdfData = {
+          action: 'savePDF',
+          fileName: repairId + '_receipt.html',
+          base64Data: base64,
+          mimeType: 'text/html',
+          repairId: repairId
+        };
+        fetch(APPS_SCRIPT_URL, {method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(pdfData)});
+      };
+      reader.readAsDataURL(blob);
+    } catch(err) {
+      console.log('PDF save error:', err);
+    }
 
     document.getElementById('rSection3').classList.remove('active');
     document.getElementById('receiveSuccess').style.display = 'block';
@@ -636,6 +689,8 @@
       <div class="summary-row"><span>Product</span><span>${data['Category']} — ${data['Battery Model'] || data['Battery Type']}</span></div>
       <div class="summary-row"><span>Problem</span><span>${data['Problem Type']}</span></div>
       <div class="summary-row"><span>Received By</span><span>${data['Received By']}</span></div>`;
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Submit Entry ✓';
     window.scrollTo(0,0);
   }
 
@@ -667,51 +722,48 @@
     document.getElementById('dNextBtn').disabled = true;
     document.getElementById('dNextBtn').style.opacity = '0.5';
 
-    window.handlePendingData = function(result) {
-      document.getElementById('loadingBox').style.display = 'none';
-      if (result.data && result.data.length > 0) {
-        renderPendingList(result.data);
-      } else {
-        document.getElementById('pendingList').innerHTML = '<div style="text-align:center;padding:30px;color:var(--text2);font-size:14px;">Koi pending repair nahi hai ✅</div>';
-      }
-    };
-    var oldScript = document.getElementById('pendingScript');
-    if (oldScript) oldScript.remove();
-    var script = document.createElement('script');
-    script.id = 'pendingScript';
-    script.onerror = function() {
-      document.getElementById('loadingBox').style.display = 'none';
-      document.getElementById('errorBox').style.display = 'block';
-    };
-    script.src = APPS_SCRIPT_URL + '?action=getPending&callback=handlePendingData';
-    document.body.appendChild(script);
+    fetch(APPS_SCRIPT_URL + '?action=getPending')
+      .then(r => r.json())
+      .then(result => {
+        document.getElementById('loadingBox').style.display = 'none';
+        if (result.data && result.data.length > 0) {
+          renderPendingList(result.data);
+        } else {
+          document.getElementById('pendingList').innerHTML = '<div style="text-align:center;padding:30px;color:var(--text2);font-size:14px;">Koi pending repair nahi hai ✅</div>';
+        }
+      })
+      .catch(err => {
+        document.getElementById('loadingBox').style.display = 'none';
+        document.getElementById('errorBox').style.display = 'block';
+      });
   }
 
   function renderPendingList(data) {
-    allPendingData = data;
     const list = document.getElementById('pendingList');
-    list.innerHTML = '<div class="form-group"><label>Repair ID / Customer Name select karo</label><select id="pendingDropdown" style="font-size:14px;padding:10px 14px;width:100%" onchange="onDropdownSelect(this)"><option value="">-- Select Repair ID --</option></select></div>';
-    const dropdown = document.getElementById('pendingDropdown');
+    list.innerHTML = '';
     data.forEach((row, idx) => {
-      const opt = document.createElement('option');
-      opt.value = idx;
-      opt.textContent = row.repairId + ' — ' + row.customerName + ' (' + (row.category || '') + (row.batteryModel ? ' ' + row.batteryModel : '') + ') | Pending: ' + row.pendingQty;
-      dropdown.appendChild(opt);
+      const card = document.createElement('div');
+      card.className = 'pending-card';
+      card.innerHTML = `
+        <div class="pending-id">${row.repairId}</div>
+        <div class="pending-info">
+          <span>👤 ${row.customerName}</span>
+          <span>📞 ${row.contactNo}</span>
+          <span>🔋 ${row.category} ${row.batteryModel ? '— '+row.batteryModel : ''}</span>
+          <span>📅 ${row.receivingDate}</span>
+        </div>
+        <div style="margin-top:6px;display:flex;gap:8px;align-items:center">
+          <span class="pending-badge">${row.repairStatus || 'Received'}</span>
+          <span style="font-size:11px;color:var(--text2)">Received: ${row.receivedQty} | Dispatched: ${row.dispatchedQty || 0} | <strong style="color:var(--danger)">Pending: ${row.pendingQty}</strong></span>
+        </div>`;
+      card.onclick = () => selectPendingCard(card, row, idx);
+      list.appendChild(card);
     });
   }
 
-  function onDropdownSelect(sel) {
-    if (!sel.value) {
-      document.getElementById('selectedInfoBox').style.display = 'none';
-      document.getElementById('dNextBtn').disabled = true;
-      document.getElementById('dNextBtn').style.opacity = '0.5';
-      return;
-    }
-    const row = allPendingData[parseInt(sel.value)];
-    selectPendingCard(row);
-  }
-
-  function selectPendingCard(row) {
+  function selectPendingCard(card, row, idx) {
+    document.querySelectorAll('.pending-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
     selectedRepairData = row;
     document.getElementById('d_selectedRepairId').value = row.repairId;
     document.getElementById('d_selectedRow').value = row.rowIndex;
@@ -764,6 +816,7 @@
       'Repair Status': document.getElementById('d_repairStatus').value,
       'Transport Details (Outward)': document.getElementById('d_transportOutward').value,
       'Dispatched By': document.getElementById('d_dispatchedBy').value,
+      'Any Cost': document.getElementById('d_anyCost').value,
       'Remarks': document.getElementById('d_remarks').value,
     };
 
