@@ -19,7 +19,6 @@
 
   .main{max-width:860px;margin:0 auto;padding:20px;}
 
-  /* Home screen */
   .home-screen{text-align:center;padding:40px 20px;}
   .home-title{font-size:24px;font-weight:600;color:var(--text);margin-bottom:8px;}
   .home-sub{font-size:14px;color:var(--text2);margin-bottom:40px;}
@@ -32,7 +31,6 @@
   .mode-title{font-size:16px;font-weight:600;color:var(--text);margin-bottom:6px;}
   .mode-sub{font-size:12px;color:var(--text2);}
 
-  /* Screens */
   .screen{display:none;}
   .screen.active{display:block;}
 
@@ -60,6 +58,16 @@
   .form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--blue);background:white;box-shadow:0 0 0 3px rgba(26,95,216,0.08);}
   .form-group textarea{resize:vertical;min-height:80px;}
 
+  /* Disabled field style */
+  .form-group input:disabled,.form-group select:disabled,.form-group textarea:disabled{
+    background:#f0f0f0 !important;
+    border-color:#d0d0d0 !important;
+    color:#aaa !important;
+    cursor:not-allowed !important;
+    opacity:0.6;
+  }
+  .field-disabled-wrap label{color:#bbb !important;}
+
   .radio-group{display:flex;flex-wrap:wrap;gap:8px;}
   .radio-opt{display:flex;align-items:center;gap:6px;padding:8px 14px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:13px;color:var(--text2);background:var(--surface2);transition:all 0.2s;user-select:none;}
   .radio-opt input{display:none;}
@@ -74,7 +82,6 @@
   .tag-opt.no.selected{background:#fff0ec;border-color:var(--danger);color:#c0392b;}
   .tag-opt.partial.selected{background:#fff8e6;border-color:var(--warning);color:#9a7b00;}
 
-  /* Dispatch - Pending list */
   .loading-box{text-align:center;padding:40px;color:var(--text2);}
   .loading-spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
   @keyframes spin{to{transform:rotate(360deg);}}
@@ -86,7 +93,6 @@
   .pending-info{font-size:12px;color:var(--text2);display:flex;gap:16px;flex-wrap:wrap;}
   .pending-badge{display:inline-block;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500;background:#fff8e6;color:#9a7b00;border:1px solid var(--warning);}
 
-  /* Selected repair info box */
   .selected-info{background:#e8f0fe;border:1.5px solid #b3d0f7;border-radius:8px;padding:14px 16px;margin-bottom:14px;}
   .selected-info-title{font-size:11px;color:var(--blue);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
   .info-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:0.5px solid #b3d0f7;}
@@ -100,9 +106,7 @@
   .btn-next:hover{background:var(--blue);}
   .btn-submit-receive{padding:12px 28px;border-radius:8px;border:none;background:var(--blue);color:white;font-size:14px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
   .btn-submit-dispatch{padding:12px 28px;border-radius:8px;border:none;background:var(--success);color:white;font-size:14px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;}
-  .btn-load{padding:10px 20px;border-radius:8px;border:1.5px solid var(--blue);background:white;color:var(--blue);font-size:13px;font-weight:500;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;margin-bottom:14px;}
 
-  /* Steps nav */
   .steps-nav{display:flex;gap:8px;margin-bottom:20px;overflow-x:auto;scrollbar-width:none;}
   .steps-nav::-webkit-scrollbar{display:none;}
   .step-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:30px;border:1.5px solid var(--border);background:white;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;white-space:nowrap;font-family:'IBM Plex Sans',sans-serif;}
@@ -114,7 +118,6 @@
   .form-section{display:none;}
   .form-section.active{display:block;}
 
-  /* Success */
   .success-screen{display:none;text-align:center;padding:60px 20px;}
   .success-icon{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 20px;animation:pop 0.4s ease;}
   .success-icon.receive{background:#e8f0fe;}
@@ -253,18 +256,19 @@
     <!-- Receive Step 2 -->
     <div class="form-section" id="rSection2">
       <div class="card">
+        <!-- CHANGE 1: "Battery + Charger Both" option removed -->
         <div class="card-label">Product Category <span class="req">*</span></div>
         <div class="radio-group">
           <label class="radio-opt selected" onclick="selectRadio(this,'r_category','Battery')"><input type="radio" name="rcat" checked><span class="radio-dot"></span> 🔋 Battery</label>
           <label class="radio-opt" onclick="selectRadio(this,'r_category','Charger')"><input type="radio" name="rcat"><span class="radio-dot"></span> ⚡ Charger</label>
-          <label class="radio-opt" onclick="selectRadio(this,'r_category','Battery + Charger')"><input type="radio" name="rcat"><span class="radio-dot"></span> 🔋+⚡ Both</label>
         </div>
         <input type="hidden" id="r_category" value="Battery">
       </div>
       <div class="card">
         <div class="card-label">Product Info</div>
         <div class="form-grid">
-          <div class="form-group">
+          <!-- CHANGE 2: "Charger" removed from Battery Type; CHANGE 3: disabled when Charger selected -->
+          <div class="form-group" id="grp_batteryType">
             <label>Battery Type</label>
             <select id="r_batteryType">
               <option value="">-- Select --</option>
@@ -273,17 +277,18 @@
               <option>Inverter Battery</option>
               <option>Solar Battery</option>
               <option>E-Rikshaw Battery</option>
-              <option>Charger</option>
               <option>E Cycle Soft Pack</option>
               <option>E Cycle Hard Pack</option>
               <option>Other</option>
             </select>
           </div>
-          <div class="form-group">
+          <!-- CHANGE 3: Battery Model disabled when Charger selected -->
+          <div class="form-group" id="grp_batteryModel">
             <label>Battery Model (Voltage)</label>
             <input type="text" id="r_batteryModel" placeholder="e.g. LFP-48V-100AH">
           </div>
-          <div class="form-group">
+          <!-- CHANGE 3: Charger Model disabled when Battery selected -->
+          <div class="form-group" id="grp_chargerModel">
             <label>Charger Model</label>
             <input type="text" id="r_chargerModel" placeholder="e.g. CHR-48V-20A">
           </div>
@@ -425,7 +430,6 @@
       </div>
     </div>
 
-    <!-- Step 1: Select Repair ID -->
     <div class="form-section active" id="dSection1">
       <div class="card">
         <div class="card-label">Pending Repairs</div>
@@ -458,7 +462,6 @@
       <div class="nav-btns"><span></span><button class="btn-next" onclick="goToDStep2()" id="dNextBtn" disabled style="opacity:0.5">Dispatch Details →</button></div>
     </div>
 
-    <!-- Step 2: Dispatch Details -->
     <div class="form-section" id="dSection2">
       <div class="card">
         <div class="card-label">Dispatch Details</div>
@@ -506,7 +509,6 @@
       <div class="nav-btns"><button class="btn-back-nav" onclick="backToDStep1()">← Back</button><button class="btn-submit-dispatch" onclick="submitDispatch()">Dispatch Karo 🚚</button></div>
     </div>
 
-    <!-- Dispatch Success -->
     <div class="success-screen" id="dispatchSuccess">
       <div class="success-icon dispatch">🚚</div>
       <h2>Battery Dispatched!</h2>
@@ -539,6 +541,8 @@
     document.getElementById('d_dispatchDate').value = now.toISOString().split('T')[0];
     repairId = generateRepairId();
     document.getElementById('repairIdDisplay').textContent = repairId;
+    // Default: Battery selected, apply field states
+    applyProductCategoryRules('Battery');
   };
 
   function generateRepairId() {
@@ -550,6 +554,44 @@
     const min = String(now.getMinutes()).padStart(2,'0');
     const ss = String(now.getSeconds()).padStart(2,'0');
     return 'LTX-R-'+dd+mm+yy+'-'+hh+min+ss;
+  }
+
+  // ---- CHANGE 3: Enable/Disable fields based on Product Category ----
+  function applyProductCategoryRules(category) {
+    const batteryTypeField = document.getElementById('r_batteryType');
+    const batteryModelField = document.getElementById('r_batteryModel');
+    const chargerModelField = document.getElementById('r_chargerModel');
+    const batterySrNoField  = document.getElementById('r_batterySrNo');
+
+    const grpBatteryType  = document.getElementById('grp_batteryType');
+    const grpBatteryModel = document.getElementById('grp_batteryModel');
+    const grpChargerModel = document.getElementById('grp_chargerModel');
+
+    if (category === 'Battery') {
+      // Battery fields: ACTIVE
+      batteryTypeField.disabled  = false;
+      batteryModelField.disabled = false;
+      batterySrNoField.disabled  = false;
+      grpBatteryType.style.opacity  = '1';
+      grpBatteryModel.style.opacity = '1';
+      // Charger Model: DISABLED
+      chargerModelField.disabled = true;
+      chargerModelField.value    = '';
+      grpChargerModel.style.opacity = '0.4';
+    } else if (category === 'Charger') {
+      // Charger Model: ACTIVE
+      chargerModelField.disabled = false;
+      grpChargerModel.style.opacity = '1';
+      // Battery fields: DISABLED
+      batteryTypeField.disabled  = true;
+      batteryTypeField.value     = '';
+      batteryModelField.disabled = true;
+      batteryModelField.value    = '';
+      batterySrNoField.disabled  = true;
+      batterySrNoField.value     = '';
+      grpBatteryType.style.opacity  = '0.4';
+      grpBatteryModel.style.opacity = '0.4';
+    }
   }
 
   function showScreen(id) {
@@ -591,7 +633,6 @@
     loadPendingRepairs();
   }
 
-  // ---- RECEIVE STEPS ----
   function updateRSteps() {
     for (let i = 1; i <= 3; i++) {
       const btn = document.getElementById('rStepBtn'+i);
@@ -625,7 +666,7 @@
   }
 
   function validateSection(sectionId) {
-    const required = document.querySelectorAll('#'+sectionId+' [required]');
+    const required = document.querySelectorAll('#'+sectionId+' [required]:not(:disabled)');
     let valid = true, firstInvalid = null;
     required.forEach(el => {
       const val = el.tagName === 'SELECT' ? el.value : el.value.trim();
@@ -637,49 +678,6 @@
     });
     if (!valid) { if (firstInvalid) firstInvalid.focus(); showToast('⚠️ Sabhi required fields bharein'); }
     return valid;
-  }
-
-  function generateReceiptHTML(data) {
-    return `
-      <html><head><style>
-        body{font-family:Arial,sans-serif;padding:20px;color:#111;}
-        h2{color:#1a5fd8;border-bottom:2px solid #1a5fd8;padding-bottom:8px;}
-        .logo{font-weight:800;font-size:18px;letter-spacing:1px;color:#1a5fd8;}
-        table{width:100%;border-collapse:collapse;margin-top:16px;}
-        td{padding:8px 12px;border:1px solid #dde1f0;font-size:13px;}
-        td:first-child{font-weight:600;background:#f7f8fc;width:40%;}
-        .repid{font-size:16px;font-weight:800;color:#1a5fd8;letter-spacing:1px;}
-        .footer{margin-top:20px;font-size:11px;color:#888;text-align:center;}
-      </style></head><body>
-        <div class="logo">LITPAX</div>
-        <h2>Battery Receiving Receipt</h2>
-        <p class="repid">Repair ID: ${data['Repair ID']}</p>
-        <table>
-          <tr><td>Sr. No.</td><td>${data['Sr No']}</td></tr>
-          <tr><td>Receiving Date</td><td>${data['Receiving Date']}</td></tr>
-          <tr><td>Customer Name</td><td>${data['Customer Name']}</td></tr>
-          <tr><td>Contact No.</td><td>${data['Contact No']}</td></tr>
-          <tr><td>Email</td><td>${data['Email'] || '—'}</td></tr>
-          <tr><td>Category</td><td>${data['Category']}</td></tr>
-          <tr><td>Battery Type</td><td>${data['Battery Type'] || '—'}</td></tr>
-          <tr><td>Battery Model (Voltage)</td><td>${data['Battery Model'] || '—'}</td></tr>
-          <tr><td>Charger Model</td><td>${data['Charger Model'] || '—'}</td></tr>
-          <tr><td>Battery Sr. No.</td><td>${data['Battery Sr No'] || '—'}</td></tr>
-          <tr><td>Received Qty</td><td>${data['Received Qty']}</td></tr>
-          <tr><td>Received Mode</td><td>${data['Received Mode'] || '—'}</td></tr>
-          <tr><td>Problem Type</td><td>${data['Problem Type']}</td></tr>
-          <tr><td>Remarks</td><td>${data['Problem Description'] || '—'}</td></tr>
-          <tr><td>Problem Description</td><td>${data['Remarks'] || '—'}</td></tr>
-          <tr><td>Warranty</td><td>${data['Warranty'] || '—'}</td></tr>
-          <tr><td>Warranty Claim</td><td>${data['Warranty Claim Status'] || '—'}</td></tr>
-          <tr><td>Received By</td><td>${data['Received By']}</td></tr>
-          <tr><td>Accepted By</td><td>${data['Accepted By'] || '—'}</td></tr>
-          <tr><td>Est. Dispatch Date</td><td>${data['Estimated Dispatch Date'] || '—'}</td></tr>
-          <tr><td>Transport (Inward)</td><td>${data['Transport Details (Inward)'] || '—'}</td></tr>
-        </table>
-        <div class="footer">Generated on ${new Date().toLocaleString('en-IN')} — Litpax Service Management</div>
-      </body></html>
-    `;
   }
 
   async function submitReceive() {
@@ -716,7 +714,6 @@
       'Receiving Remarks': document.getElementById('r_remarks').value,
     };
 
-    // Sheet mein data bhejo
     fetch(APPS_SCRIPT_URL, {method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
 
     document.getElementById('rSection3').classList.remove('active');
@@ -760,9 +757,7 @@
     window.scrollTo(0,0);
   }
 
-  function printReceipt() {
-    window.print();
-  }
+  function printReceipt() { window.print(); }
 
   function resetReceive() {
     document.getElementById('receiveSuccess').style.display = 'none';
@@ -776,6 +771,7 @@
     document.getElementById('r_warranty').value = '';
     document.querySelectorAll('#receiveScreen .radio-opt').forEach((o,i) => o.classList.toggle('selected',i===0));
     document.querySelectorAll('#receiveScreen .tag-opt').forEach(o => o.classList.remove('selected'));
+    applyProductCategoryRules('Battery');
     rCurrentStep = 1;
     document.querySelectorAll('#receiveScreen .form-section').forEach((s,i) => s.classList.toggle('active', i===0));
     updateRSteps();
@@ -902,7 +898,7 @@
       <div class="summary-row"><span>Repair ID</span><span style="color:#00856e;font-family:'IBM Plex Mono',monospace;font-weight:700">${data['Repair ID']}</span></div>
       <div class="summary-row"><span>Customer</span><span>${selectedRepairData?.customerName || '—'}</span></div>
       <div class="summary-row"><span>Dispatch Date</span><span>${data['Dispatch Date']}</span></div>
-      <div class="summary-row"><span>Dispatched Qty</span><span>${data['Dispatched Qty']}</span></div>
+      <div class="summary-row"><span>Dispatched Qty</span><span>${data['New Dispatched Qty']}</span></div>
       <div class="summary-row"><span>Pending Qty</span><span>${data['Pending Qty']}</span></div>
       <div class="summary-row"><span>Status</span><span>${data['Repair Status']}</span></div>
       <div class="summary-row"><span>Dispatched By</span><span>${data['Dispatched By']}</span></div>`;
@@ -926,6 +922,10 @@
     document.querySelectorAll(`[name="${el.querySelector('input').name}"]`).forEach(i => i.closest('.radio-opt').classList.remove('selected'));
     el.classList.add('selected');
     document.getElementById(fieldId).value = val;
+    // CHANGE 3: Apply field rules on category change
+    if (fieldId === 'r_category') {
+      applyProductCategoryRules(val);
+    }
   }
 
   function selectTag(el, fieldId, val) {
