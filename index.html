@@ -267,34 +267,57 @@
       <div class="card">
         <div class="card-label">Product Info</div>
         <div class="form-grid">
-          <!-- CHANGE 2: "Charger" removed from Battery Type; CHANGE 3: disabled when Charger selected -->
-          <div class="form-group" id="grp_batteryType">
-            <label>Battery Type</label>
-            <select id="r_batteryType">
-              <option value="">-- Select --</option>
-              <option>2 Wheeler Battery</option>
-              <option>3 Wheeler Battery</option>
-              <option>Inverter Battery</option>
-              <option>Solar Battery</option>
-              <option>E-Rikshaw Battery</option>
-              <option>E Cycle Soft Pack</option>
-              <option>E Cycle Hard Pack</option>
-              <option>Other</option>
-            </select>
+          <!-- Battery Group -->
+          <div style="grid-column:1/-1;" id="grp_batterySection">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#1a5fd8;background:#e8f0fe;border-radius:6px;padding:6px 12px;margin-bottom:10px;">&#128267; Battery Details</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="form-group" id="grp_batteryType">
+                <label>Battery Type</label>
+                <select id="r_batteryType">
+                  <option value="">-- Select --</option>
+                  <option>2 Wheeler Battery</option>
+                  <option>3 Wheeler Battery</option>
+                  <option>Inverter Battery</option>
+                  <option>Solar Battery</option>
+                  <option>E-Rikshaw Battery</option>
+                  <option>E Cycle Soft Pack</option>
+                  <option>E Cycle Hard Pack</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-group" id="grp_batteryModel">
+                <label>Battery Model (Voltage)</label>
+                <input type="text" id="r_batteryModel" placeholder="e.g. LFP-48V-100AH">
+              </div>
+              <div class="form-group" id="grp_batterySrNo">
+                <label>Battery Sr. No.</label>
+                <input type="text" id="r_batterySrNo" placeholder="Serial number">
+              </div>
+            </div>
           </div>
-          <!-- CHANGE 3: Battery Model disabled when Charger selected -->
-          <div class="form-group" id="grp_batteryModel">
-            <label>Battery Model (Voltage)</label>
-            <input type="text" id="r_batteryModel" placeholder="e.g. LFP-48V-100AH">
-          </div>
-          <!-- CHANGE 3: Charger Model disabled when Battery selected -->
-          <div class="form-group" id="grp_chargerModel">
-            <label>Charger Model</label>
-            <input type="text" id="r_chargerModel" placeholder="e.g. CHR-48V-20A">
-          </div>
-          <div class="form-group">
-            <label>Battery Sr. No.</label>
-            <input type="text" id="r_batterySrNo" placeholder="Serial number">
+
+          <!-- Charger Group -->
+          <div style="grid-column:1/-1;" id="grp_chargerSection">
+            <div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;color:#00856e;background:#e8f8f4;border-radius:6px;padding:6px 12px;margin-bottom:10px;">&#9889; Charger Details</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+              <div class="form-group" id="grp_chargerType">
+                <label>Charger Type</label>
+                <select id="r_chargerType">
+                  <option value="">-- Select --</option>
+                  <option>Indian Charger</option>
+                  <option>Chinese Charger</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-group" id="grp_chargerModel">
+                <label>Charger Model</label>
+                <input type="text" id="r_chargerModel" placeholder="e.g. CHR-48V-20A">
+              </div>
+              <div class="form-group" id="grp_chargerSrNo">
+                <label>Charger Serial Number</label>
+                <input type="text" id="r_chargerSrNo" placeholder="Charger serial number">
+              </div>
+            </div>
           </div>
           <div class="form-group">
             <label>Received Qty <span class="req">*</span></label>
@@ -526,7 +549,7 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx2uqm-IDxC2fTlrecwGBeH8Ml4mGh70Uhvn6iW2qG24or6kNH0OOheub2CVN-i6IdA/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwjwhRa7L4z2KiZMtl7ZtJKNHwQqeP1v1tVxkPYCJ9De_3imyHVYKlcOSgBSyPsxGzB/exec';
 
   let repairId = '';
   let rCurrentStep = 1;
@@ -558,39 +581,41 @@
 
   // ---- CHANGE 3: Enable/Disable fields based on Product Category ----
   function applyProductCategoryRules(category) {
-    const batteryTypeField = document.getElementById('r_batteryType');
+    const batteryTypeField  = document.getElementById('r_batteryType');
     const batteryModelField = document.getElementById('r_batteryModel');
-    const chargerModelField = document.getElementById('r_chargerModel');
-    const batterySrNoField  = document.getElementById('r_batterySrNo');
-
-    const grpBatteryType  = document.getElementById('grp_batteryType');
-    const grpBatteryModel = document.getElementById('grp_batteryModel');
-    const grpChargerModel = document.getElementById('grp_chargerModel');
+    const batterySection    = document.getElementById('grp_batterySection');
+    const chargerSection    = document.getElementById('grp_chargerSection');
+    const chargerModelField  = document.getElementById('r_chargerModel');
+    const chargerSrNoField   = document.getElementById('r_chargerSrNo');
+    const chargerTypeField   = document.getElementById('r_chargerType');
+    const batterySrNoField   = document.getElementById('r_batterySrNo');
 
     if (category === 'Battery') {
-      // Battery fields: ACTIVE
+      // Battery section: ACTIVE
       batteryTypeField.disabled  = false;
       batteryModelField.disabled = false;
       batterySrNoField.disabled  = false;
-      grpBatteryType.style.opacity  = '1';
-      grpBatteryModel.style.opacity = '1';
-      // Charger Model: DISABLED
-      chargerModelField.disabled = true;
-      chargerModelField.value    = '';
-      grpChargerModel.style.opacity = '0.4';
+      batterySection.style.opacity      = '1';
+      batterySection.style.pointerEvents = 'auto';
+      // Charger section: DISABLED
+      chargerModelField.disabled = true;  chargerModelField.value = '';
+      chargerSrNoField.disabled  = true;  chargerSrNoField.value  = '';
+      chargerTypeField.disabled  = true;  chargerTypeField.value  = '';
+      chargerSection.style.opacity      = '0.35';
+      chargerSection.style.pointerEvents = 'none';
     } else if (category === 'Charger') {
-      // Charger Model: ACTIVE
+      // Charger section: ACTIVE
       chargerModelField.disabled = false;
-      grpChargerModel.style.opacity = '1';
-      // Battery fields: DISABLED
-      batteryTypeField.disabled  = true;
-      batteryTypeField.value     = '';
-      batteryModelField.disabled = true;
-      batteryModelField.value    = '';
-      batterySrNoField.disabled  = true;
-      batterySrNoField.value     = '';
-      grpBatteryType.style.opacity  = '0.4';
-      grpBatteryModel.style.opacity = '0.4';
+      chargerSrNoField.disabled  = false;
+      chargerTypeField.disabled  = false;
+      chargerSection.style.opacity      = '1';
+      chargerSection.style.pointerEvents = 'auto';
+      // Battery section: DISABLED
+      batteryTypeField.disabled  = true;  batteryTypeField.value  = '';
+      batteryModelField.disabled = true;  batteryModelField.value = '';
+      batterySrNoField.disabled  = true;  batterySrNoField.value  = '';
+      batterySection.style.opacity      = '0.35';
+      batterySection.style.pointerEvents = 'none';
     }
   }
 
@@ -698,8 +723,10 @@
       'Category': document.getElementById('r_category').value,
       'Battery Type': document.getElementById('r_batteryType').value,
       'Battery Model': document.getElementById('r_batteryModel').value,
-      'Charger Model': document.getElementById('r_chargerModel').value,
       'Battery Sr No': document.getElementById('r_batterySrNo').value,
+      'Charger Model': document.getElementById('r_chargerModel').value,
+      'Charger Sr No': document.getElementById('r_chargerSrNo').value,
+      'Charger Type': document.getElementById('r_chargerType').value,
       'Received Qty': document.getElementById('r_receivedQty').value,
       'Received Mode': document.getElementById('r_receivedMode').value,
       'Problem Type': document.getElementById('r_problemType').value,
@@ -737,6 +764,8 @@
         <tr><td>Battery Type</td><td>${data['Battery Type'] || '—'}</td></tr>
         <tr><td>Battery Model (Voltage)</td><td>${data['Battery Model'] || '—'}</td></tr>
         <tr><td>Charger Model</td><td>${data['Charger Model'] || '—'}</td></tr>
+        <tr><td>Charger Serial No.</td><td>${data['Charger Sr No'] || '—'}</td></tr>
+        <tr><td>Charger Type</td><td>${data['Charger Type'] || '—'}</td></tr>
         <tr><td>Battery Sr. No.</td><td>${data['Battery Sr No'] || '—'}</td></tr>
         <tr><td>Received Qty</td><td>${data['Received Qty']}</td></tr>
         <tr><td>Received Mode</td><td>${data['Received Mode'] || '—'}</td></tr>
