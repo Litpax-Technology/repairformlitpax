@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwCCcIJIKKifkpAc6QIqZ_ndwHD-BNPW5ErUU55zVqpb05QpcgVVwS_W20hoieNdWP/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxaq-MZ9XcN4gWq7hDYk5RKGVFEi4_StxqFIG7iajUADxxUMgMR2AJG1Aj1atvmgjex/exec';
 
 let repairId = '';
 let rCurrentStep = 1;
@@ -114,8 +114,8 @@ function prevRStep(from) {
 // ─── PRODUCT CATEGORY RULES ──────────────────────────────────────────────────
 
 function applyProductCategoryRules(category) {
-  const batterySection = document.getElementById('grp_batterySection');
-  const chargerSection = document.getElementById('grp_chargerSection');
+  const batterySection  = document.getElementById('grp_batterySection');
+  const chargerSection  = document.getElementById('grp_chargerSection');
   const batteryQtyGroup = document.getElementById('grp_batteryQty');
   const chargerQtyGroup = document.getElementById('grp_chargerQty');
 
@@ -157,6 +157,37 @@ function setSection(sectionEl, fields, enabled) {
     f.disabled = !enabled;
     if (!enabled) f.value = '';
   });
+}
+
+// ─── DISPATCH CATEGORY RULES ─────────────────────────────────────────────────
+
+function applyDispatchCategoryRules(category) {
+  const batGrp = document.getElementById('grp_dBatteryQty');
+  const chrGrp = document.getElementById('grp_dChargerQty');
+  const batFld = document.getElementById('d_batteryDispatchQty');
+  const chrFld = document.getElementById('d_chargerDispatchQty');
+
+  if (category === 'Battery') {
+    batGrp.style.display = '';
+    chrGrp.style.display = 'none';
+    batFld.disabled = false;
+    chrFld.disabled = true; chrFld.value = '0';
+  } else if (category === 'Charger') {
+    batGrp.style.display = 'none';
+    chrGrp.style.display = '';
+    batFld.disabled = true; batFld.value = '0';
+    chrFld.disabled = false;
+  } else if (category === 'Battery+Charger') {
+    batGrp.style.display = '';
+    chrGrp.style.display = '';
+    batFld.disabled = false;
+    chrFld.disabled = false;
+  } else {
+    batGrp.style.display = '';
+    chrGrp.style.display = '';
+    batFld.disabled = false;
+    chrFld.disabled = false;
+  }
 }
 
 // ─── VALIDATION ──────────────────────────────────────────────────────────────
@@ -367,14 +398,17 @@ function selectPendingCard(row) {
   document.getElementById('si_customer').textContent = row.customerName;
   document.getElementById('si_contact').textContent = row.contactNo;
   document.getElementById('si_product').textContent = (row.category || '') + (row.batteryModel ? ' — ' + row.batteryModel : '');
-  document.getElementById('si_batteryReceivedQty').textContent = row.batteryQtyReceived || 0;
-  document.getElementById('si_chargerReceivedQty').textContent = row.chargerQtyReceived || 0;
-  document.getElementById('si_dispatchedQty').textContent = row.dispatchedQty || 0;
+  document.getElementById('si_batteryRcv').textContent = row.batteryQtyReceived || 0;
+  document.getElementById('si_chargerRcv').textContent = row.chargerQtyReceived || 0;
+  document.getElementById('si_batteryPending').textContent = row.batteryPending || 0;
+  document.getElementById('si_chargerPending').textContent = row.chargerPending || 0;
   document.getElementById('si_pendingQty').textContent = row.pendingQty;
   document.getElementById('si_receivedDate').textContent = row.receivingDate;
   document.getElementById('selectedInfoBox').style.display = 'block';
   document.getElementById('dNextBtn').disabled = false;
   document.getElementById('dNextBtn').style.opacity = '1';
+  // Apply dispatch category rules
+  applyDispatchCategoryRules(row.category || 'Battery+Charger');
   calcDispatchPending();
 }
 
@@ -395,21 +429,36 @@ function backToDStep1() {
 }
 
 function calcDispatchPending() {
-  const currentPending = parseInt(selectedRepairData?.pendingQty) || 0;
-  const newDispatch = parseInt(document.getElementById('d_dispatchedQty').value) || 0;
-  const remaining = Math.max(0, currentPending - newDispatch);
+  const batPending = parseInt(selectedRepairData?.batteryPending) || 0;
+  const chrPending = parseInt(selectedRepairData?.chargerPending) || 0;
+  const totalPending = parseInt(selectedRepairData?.pendingQty) || 0;
+
+  const batDisp = parseInt(document.getElementById('d_batteryDispatchQty')?.value) || 0;
+  const chrDisp = parseInt(document.getElementById('d_chargerDispatchQty')?.value) || 0;
+  const totalDisp = batDisp + chrDisp;
+
+  const remaining = Math.max(0, totalPending - totalDisp);
   document.getElementById('d_pendingQty').value = remaining;
 }
 
 function submitDispatch() {
   if (!validateSection('dSection2')) return;
 
+  const batQty = parseInt(document.getElementById('d_batteryDispatchQty').value) || 0;
+  const chrQty = parseInt(document.getElementById('d_chargerDispatchQty').value) || 0;
+
+  if (batQty === 0 && chrQty === 0) {
+    showToast('⚠️ Battery ya Charger dispatch qty bharein');
+    return;
+  }
+
   const data = {
     action: 'dispatch',
     rowIndex: document.getElementById('d_selectedRow').value,
     'Repair ID': document.getElementById('d_selectedRepairId').value,
     'Dispatch Date': document.getElementById('d_dispatchDate').value,
-    'New Dispatched Qty': document.getElementById('d_dispatchedQty').value,
+    'Battery Dispatch Qty': batQty,
+    'Charger Dispatch Qty': chrQty,
     'Pending Qty': document.getElementById('d_pendingQty').value,
     'Repair Status': document.getElementById('d_repairStatus').value,
     'Transport Details (Outward)': document.getElementById('d_transportOutward').value,
@@ -431,7 +480,8 @@ function submitDispatch() {
     <div class="summary-row"><span>Repair ID</span><span style="color:#00856e;font-family:'IBM Plex Mono',monospace;font-weight:700">${data['Repair ID']}</span></div>
     <div class="summary-row"><span>Customer</span><span>${selectedRepairData?.customerName || '—'}</span></div>
     <div class="summary-row"><span>Dispatch Date</span><span>${data['Dispatch Date']}</span></div>
-    <div class="summary-row"><span>Dispatched Qty</span><span>${data['New Dispatched Qty']}</span></div>
+    <div class="summary-row"><span>Battery Dispatched</span><span>${batQty}</span></div>
+    <div class="summary-row"><span>Charger Dispatched</span><span>${chrQty}</span></div>
     <div class="summary-row"><span>Pending Qty</span><span>${data['Pending Qty']}</span></div>
     <div class="summary-row"><span>Status</span><span>${data['Repair Status']}</span></div>
     <div class="summary-row"><span>Dispatched By</span><span>${data['Dispatched By']}</span></div>`;
