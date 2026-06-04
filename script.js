@@ -433,10 +433,25 @@ function calcDispatchPending() {
   const chrPending = parseInt(selectedRepairData?.chargerPending) || 0;
   const totalPending = parseInt(selectedRepairData?.pendingQty) || 0;
 
-  const batDisp = parseInt(document.getElementById('d_batteryDispatchQty')?.value) || 0;
-  const chrDisp = parseInt(document.getElementById('d_chargerDispatchQty')?.value) || 0;
-  const totalDisp = batDisp + chrDisp;
+  const batFld = document.getElementById('d_batteryDispatchQty');
+  const chrFld = document.getElementById('d_chargerDispatchQty');
 
+  let batDisp = parseInt(batFld?.value) || 0;
+  let chrDisp = parseInt(chrFld?.value) || 0;
+
+  // Cap at pending
+  if (batDisp > batPending) {
+    batDisp = batPending;
+    if (batFld) batFld.value = batPending;
+    showToast('⚠️ Battery qty ' + batPending + ' se zyada nahi ho sakti');
+  }
+  if (chrDisp > chrPending) {
+    chrDisp = chrPending;
+    if (chrFld) chrFld.value = chrPending;
+    showToast('⚠️ Charger qty ' + chrPending + ' se zyada nahi ho sakti');
+  }
+
+  const totalDisp = batDisp + chrDisp;
   const remaining = Math.max(0, totalPending - totalDisp);
   document.getElementById('d_pendingQty').value = remaining;
 }
@@ -444,11 +459,22 @@ function calcDispatchPending() {
 function submitDispatch() {
   if (!validateSection('dSection2')) return;
 
+  const batPending = parseInt(selectedRepairData?.batteryPending) || 0;
+  const chrPending = parseInt(selectedRepairData?.chargerPending) || 0;
+
   const batQty = parseInt(document.getElementById('d_batteryDispatchQty').value) || 0;
   const chrQty = parseInt(document.getElementById('d_chargerDispatchQty').value) || 0;
 
   if (batQty === 0 && chrQty === 0) {
     showToast('⚠️ Battery ya Charger dispatch qty bharein');
+    return;
+  }
+  if (batQty > batPending) {
+    showToast('⚠️ Battery dispatch qty pending (' + batPending + ') se zyada hai');
+    return;
+  }
+  if (chrQty > chrPending) {
+    showToast('⚠️ Charger dispatch qty pending (' + chrPending + ') se zyada hai');
     return;
   }
 
