@@ -247,7 +247,6 @@ async function submitReceive() {
     'Accepted By': document.getElementById('r_acceptedBy').value,
     'Estimated Dispatch Date': document.getElementById('r_estimatedDispatchDate').value,
     'Transport Details (Inward)': document.getElementById('r_transportInward').value,
-    'Transport Details (Outward)': document.getElementById('r_transportOutward').value,
     'Receiving Remarks': document.getElementById('r_remarks').value,
   };
 
