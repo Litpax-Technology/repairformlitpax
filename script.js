@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwjwhRa7L4z2KiZMtl7ZtJKNHwQqeP1v1tVxkPYCJ9De_3imyHVYKlcOSgBSyPsxGzB/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxwCCcIJIKKifkpAc6QIqZ_ndwHD-BNPW5ErUU55zVqpb05QpcgVVwS_W20hoieNdWP/exec';
 
 let repairId = '';
 let rCurrentStep = 1;
@@ -201,11 +201,11 @@ async function submitReceive() {
     'Battery Type': document.getElementById('r_batteryType').value,
     'Battery Model': document.getElementById('r_batteryModel').value,
     'Battery Sr No': document.getElementById('r_batterySrNo').value,
-    'Battery Received Qty': document.getElementById('r_batteryReceivedQty').value || '0',
+    'Battery Qty Received': document.getElementById('r_batteryReceivedQty').value || '0',
     'Charger Model': document.getElementById('r_chargerModel').value,
     'Charger Serial Number': document.getElementById('r_chargerSrNo').value,
     'Charger Type': document.getElementById('r_chargerType').value,
-    'Charger Received Qty': document.getElementById('r_chargerReceivedQty').value || '0',
+    'Charger Qty Received': document.getElementById('r_chargerReceivedQty').value || '0',
     'Received Mode': document.getElementById('r_receivedMode').value,
     'Problem Type': document.getElementById('r_problemType').value,
     'Problem Description': document.getElementById('r_problemDesc').value,
@@ -248,11 +248,11 @@ async function submitReceive() {
       <tr><td>Battery Type</td><td>${data['Battery Type'] || '—'}</td></tr>
       <tr><td>Battery Model</td><td>${data['Battery Model'] || '—'}</td></tr>
       <tr><td>Battery Sr. No.</td><td>${data['Battery Sr No'] || '—'}</td></tr>
-      <tr><td>Battery Received Qty</td><td>${data['Battery Received Qty']}</td></tr>
+      <tr><td>Battery Qty Received</td><td>${data['Battery Qty Received']}</td></tr>
       <tr><td>Charger Model</td><td>${data['Charger Model'] || '—'}</td></tr>
       <tr><td>Charger Serial No.</td><td>${data['Charger Serial Number'] || '—'}</td></tr>
       <tr><td>Charger Type</td><td>${data['Charger Type'] || '—'}</td></tr>
-      <tr><td>Charger Received Qty</td><td>${data['Charger Received Qty']}</td></tr>
+      <tr><td>Charger Qty Received</td><td>${data['Charger Qty Received']}</td></tr>
       <tr><td>Received Mode</td><td>${data['Received Mode'] || '—'}</td></tr>
     </table>
     <div class="receipt-section" style="margin-top:8px;">Service Details</div>
@@ -367,8 +367,8 @@ function selectPendingCard(row) {
   document.getElementById('si_customer').textContent = row.customerName;
   document.getElementById('si_contact').textContent = row.contactNo;
   document.getElementById('si_product').textContent = (row.category || '') + (row.batteryModel ? ' — ' + row.batteryModel : '');
-  document.getElementById('si_batteryReceivedQty').textContent = row.batteryReceivedQty || row.receivedQty || 0;
-  document.getElementById('si_chargerReceivedQty').textContent = row.chargerReceivedQty || 0;
+  document.getElementById('si_batteryReceivedQty').textContent = row.batteryQtyReceived || 0;
+  document.getElementById('si_chargerReceivedQty').textContent = row.chargerQtyReceived || 0;
   document.getElementById('si_dispatchedQty').textContent = row.dispatchedQty || 0;
   document.getElementById('si_pendingQty').textContent = row.pendingQty;
   document.getElementById('si_receivedDate').textContent = row.receivingDate;
