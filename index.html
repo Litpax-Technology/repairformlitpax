@@ -66,14 +66,19 @@
           <div class="repair-id-label">Repair ID</div>
           <div class="repair-id-value" id="repairIdDisplay">—</div>
         </div>
+        <input type="hidden" id="r_srNo">
         <div class="form-grid">
-          <div class="form-group">
-            <label>Sr. No. (Auto)</label>
-            <input type="text" id="r_srNo" placeholder="Loading..." readonly style="background:#f0f6ff;border-color:#b3d0f7;color:var(--blue);font-weight:600">
-          </div>
           <div class="form-group">
             <label>Receiving Date <span class="req">*</span></label>
             <input type="date" id="r_receivingDate" required>
+          </div>
+          <div class="form-group">
+            <label>Transport Details (Inward)</label>
+            <input type="text" id="r_transportInward" placeholder="e.g. BlueDart AWB 123456">
+          </div>
+          <div class="form-group">
+            <label>Transport Details (Outward)</label>
+            <input type="text" id="r_transportOutward" placeholder="e.g. DTDC Tracking No.">
           </div>
         </div>
       </div>
@@ -255,10 +260,6 @@
           <div class="form-group">
             <label>Estimated Dispatch Date</label>
             <input type="date" id="r_estimatedDispatchDate">
-          </div>
-          <div class="form-group full">
-            <label>Transport Details (Inward)</label>
-            <input type="text" id="r_transportInward" placeholder="e.g. BlueDart AWB 123456">
           </div>
           <div class="form-group full">
             <label>Receiving Remarks</label>
