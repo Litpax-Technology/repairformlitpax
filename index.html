@@ -335,10 +335,11 @@
           <div class="info-row"><span>Customer</span><span id="si_customer"></span></div>
           <div class="info-row"><span>Contact</span><span id="si_contact"></span></div>
           <div class="info-row"><span>Product</span><span id="si_product"></span></div>
-          <div class="info-row"><span>Battery Received Qty</span><span id="si_batteryReceivedQty"></span></div>
-          <div class="info-row"><span>Charger Received Qty</span><span id="si_chargerReceivedQty"></span></div>
-          <div class="info-row"><span>Already Dispatched</span><span id="si_dispatchedQty"></span></div>
-          <div class="info-row"><span style="font-weight:600">Pending Qty</span><span id="si_pendingQty" style="color:var(--danger);font-weight:600;font-family:'IBM Plex Mono',monospace"></span></div>
+          <div class="info-row"><span>Battery Qty Received</span><span id="si_batteryRcv"></span></div>
+          <div class="info-row"><span>Charger Qty Received</span><span id="si_chargerRcv"></span></div>
+          <div class="info-row"><span>🔋 Battery Pending</span><span id="si_batteryPending" style="color:var(--danger);font-weight:600"></span></div>
+          <div class="info-row"><span>⚡ Charger Pending</span><span id="si_chargerPending" style="color:var(--warning);font-weight:600"></span></div>
+          <div class="info-row"><span style="font-weight:600">Total Pending</span><span id="si_pendingQty" style="color:var(--danger);font-weight:600;font-family:'IBM Plex Mono',monospace"></span></div>
           <div class="info-row"><span>Received On</span><span id="si_receivedDate"></span></div>
         </div>
       </div>
@@ -357,9 +358,13 @@
             <label>Dispatch Date <span class="req">*</span></label>
             <input type="date" id="d_dispatchDate" required>
           </div>
-          <div class="form-group">
-            <label>Dispatched Qty <span class="req">*</span></label>
-            <input type="number" id="d_dispatchedQty" placeholder="0" min="1" required oninput="calcDispatchPending()">
+          <div class="form-group" id="grp_dBatteryQty">
+            <label>🔋 Battery Dispatch Qty</label>
+            <input type="number" id="d_batteryDispatchQty" placeholder="0" min="0" value="0" oninput="calcDispatchPending()">
+          </div>
+          <div class="form-group" id="grp_dChargerQty">
+            <label>⚡ Charger Dispatch Qty</label>
+            <input type="number" id="d_chargerDispatchQty" placeholder="0" min="0" value="0" oninput="calcDispatchPending()">
           </div>
           <div class="form-group">
             <label>Pending Qty (Auto)</label>
