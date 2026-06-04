@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwhctCe-xgRkcm7aLReHxm7bp3sDHgWyMP1LM_2W82vq2nMwfBMOW612jwRxhVpgtEJ/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxbkvJTAb6U051S_OFIoYQnN0iDSOucOr8pL11xJzAuYWd5vIdcKG4cKAokXV2-esY5/exec';
 
 let repairId = '';
 let rCurrentStep = 1;
@@ -247,6 +247,7 @@ async function submitReceive() {
     'Accepted By': document.getElementById('r_acceptedBy').value,
     'Estimated Dispatch Date': document.getElementById('r_estimatedDispatchDate').value,
     'Transport Details (Inward)': document.getElementById('r_transportInward').value,
+    'Transport Details (Outward)': document.getElementById('r_transportOutward').value,
     'Receiving Remarks': document.getElementById('r_remarks').value,
   };
 
