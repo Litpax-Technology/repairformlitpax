@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Litpax — Service Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--primary:#0d1526;--blue:#1a5fd8;--surface2:#f7f8fc;--surface3:#eef0f8;--border:#dde1f0;--text:#111827;--text2:#5a6080;--text3:#8890b0;--success:#00b894;--warning:#f9a825;--danger:#e17055;--accent:#e94560;--radius:10px;--shadow:0 2px 16px rgba(13,21,38,0.08);}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var(--text);min-height:100vh;padding-bottom:60px;}
+
+/* ─── HEADER ─── */
+.header{background:var(--primary);color:white;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(13,21,38,0.22);}
+.header-inner{max-width:1200px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px;}
+.logo{background:var(--blue);color:white;font-size:12px;font-weight:700;padding:5px 10px;border-radius:6px;letter-spacing:1px;font-family:'IBM Plex Mono',monospace;}
+.header-text h1{font-size:15px;font-weight:600;color:white;}
+.header-text p{font-size:11px;color:rgba(255,255,255,0.5);margin-top:1px;}
+.header-link{margin-left:auto;font-size:12px;color:rgba(255,255,255,0.75);text-decoration:none;border:1px solid rgba(255,255,255,0.25);padding:6px 12px;border-radius:6px;transition:all 0.2s;white-space:nowrap;}
+.header-link:hover{background:rgba(255,255,255,0.1);color:white;}
+.header-date{text-align:right;font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,0.45);line-height:1.6;}
+
+.main{max-width:1200px;margin:0 auto;padding:20px;}
+
+/* ─── FILTER BAR ─── */
+.filter-bar{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:22px;box-shadow:var(--shadow);}
+.filter-group{display:flex;flex-direction:column;gap:4px;}
+.filter-group label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;}
+.filter-group input{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);outline:none;}
+.filter-group input:focus{border-color:var(--blue);background:white;}
+.quick-filters{display:flex;gap:6px;flex-wrap:wrap;}
+.chip{padding:8px 14px;border-radius:30px;border:1.5px solid var(--border);background:white;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:all 0.2s;}
+.chip:hover{border-color:var(--blue);color:var(--blue);}
+.chip.active{background:var(--primary);color:white;border-color:var(--primary);}
+.btn-refresh{margin-left:auto;padding:9px 18px;border-radius:8px;border:none;background:var(--blue);color:white;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:all 0.2s;}
+.btn-refresh:hover{background:#1450b8;}
+
+/* ─── SECTION TITLES ─── */
+.section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin:26px 0 12px;display:flex;align-items:center;gap:8px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* ─── KPI CARDS ─── */
+.kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;}
+.kpi-grid.four{grid-template-columns:repeat(4,1fr);}
+.kpi-grid.six{grid-template-columns:repeat(6,1fr);}
+@media(max-width:1000px){.kpi-grid,.kpi-grid.six{grid-template-columns:repeat(3,1fr);}.kpi-grid.four{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.kpi-grid,.kpi-grid.six,.kpi-grid.four{grid-template-columns:repeat(2,1fr);}}
+
+.kpi-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);transition:all 0.2s;position:relative;overflow:hidden;}
+.kpi-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(13,21,38,0.12);}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--blue);opacity:0;transition:opacity 0.2s;}
+.kpi-card:hover::before{opacity:1;}
+.kpi-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:10px;}
+.kpi-icon.blue{background:#e8f0fe;}
+.kpi-icon.green{background:#e8f8f4;}
+.kpi-icon.orange{background:#fff8e6;}
+.kpi-icon.red{background:#fff0ec;}
+.kpi-icon.purple{background:#f3e8ff;}
+.kpi-value{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:700;color:var(--text);line-height:1.1;}
+.kpi-unit{font-size:12px;font-weight:500;color:var(--text3);margin-left:4px;}
+.kpi-label{font-size:12px;color:var(--text2);font-weight:500;margin-top:4px;}
+.kpi-sub{font-size:10px;color:var(--text3);margin-top:3px;}
+.kpi-card.mini{padding:14px;}
+.kpi-card.mini .kpi-value{font-size:22px;}
+.kpi-card.bat{border-top:3px solid var(--blue);}
+.kpi-card.chr{border-top:3px solid var(--success);}
+.red-text{color:var(--accent)!important;}
+.green-text{color:#00856e!important;}
+.orange-text{color:#9a7b00!important;}
+.blue-text{color:var(--blue)!important;}
+
+/* ─── CHARTS ─── */
+.chart-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.chart-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);}
+.chart-card.full{grid-column:1/-1;}
+@media(max-width:1000px){.chart-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:600px){.chart-grid{grid-template-columns:1fr;}}
+.chart-title{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:12px;}
+.chart-wrap{position:relative;height:260px;}
+.chart-wrap.small{height:220px;}
+
+/* ─── TABLES ─── */
+.table-card{background:white;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+.table-scroll{overflow-x:auto;}
+.data-table{width:100%;border-collapse:collapse;min-width:700px;}
+.data-table th{background:var(--surface3);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);white-space:nowrap;}
+.data-table td{font-size:13px;color:var(--text);padding:10px 14px;border-bottom:1px solid var(--surface3);white-space:nowrap;}
+.data-table tbody tr:hover{background:var(--surface2);}
+.data-table tbody tr:last-child td{border-bottom:none;}
+.mono{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--blue);}
+.table-empty{text-align:center;padding:30px;color:var(--text2);font-size:13px;}
+
+.badge{display:inline-block;padding:3px 10px;border-radius:30px;font-size:11px;font-weight:600;}
+.badge.received{background:#e8f0fe;color:var(--blue);}
+.badge.dispatched{background:#e8f8f4;color:#00856e;}
+.badge.partialdisp{background:#fff8e6;color:#9a7b00;}
+.badge.other{background:var(--surface3);color:var(--text2);}
+.badge.late{background:#fff0ec;color:#c0392b;font-family:'IBM Plex Mono',monospace;}
+
+/* ─── MISC ─── */
+.loading-box{text-align:center;padding:60px;color:var(--text2);}
+.loading-spinner{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 12px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.error-box{background:#fff0ec;border:1.5px solid var(--danger);border-radius:8px;padding:12px 16px;font-size:13px;color:#c0392b;margin-bottom:14px;display:none;}
+.footer-note{text-align:center;font-size:11px;color:var(--text3);margin-top:30px;}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--primary);color:white;padding:12px 24px;border-radius:30px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity 0.3s;pointer-events:none;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">LITPAX</div>
+    <div class="header-text">
+      <h1>Service Dashboard</h1>
+      <p>Battery / Charger — Full Overview</p>
+    </div>
+    <a href="index.html" class="header-link">← Service Entry</a>
+    <div class="header-date" id="headerDate"></div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- FILTER BAR -->
+  <div class="filter-bar">
+    <div class="filter-group">
+      <label>From</label>
+      <input type="date" id="filterFrom">
+    </div>
+    <div class="filter-group">
+      <label>To</label>
+      <input type="date" id="filterTo">
+    </div>
+    <div class="quick-filters">
+      <button class="chip" onclick="quickFilter('today', this)">Today</button>
+      <button class="chip" onclick="quickFilter('7d', this)">7 Days</button>
+      <button class="chip" onclick="quickFilter('month', this)">This Month</button>
+      <button class="chip active" onclick="quickFilter('all', this)">All Time</button>
+    </div>
+    <button class="btn-refresh" onclick="loadDashboard()">↻ Refresh</button>
+  </div>
+
+  <!-- LOADING / ERROR -->
+  <div class="loading-box" id="loadingBox">
+    <div class="loading-spinner"></div>
+    <p>Dashboard data load ho raha hai...</p>
+  </div>
+  <div class="error-box" id="errorBox">Sheet se data load nahi ho paya. GAS deployment check karo.</div>
+
+  <div id="dashboardContent" style="display:none">
+
+    <!-- SECTION: OVERVIEW -->
+    <div class="section-title">📊 Overview</div>
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-icon blue">🗂️</div>
+        <div class="kpi-value" id="kpiTotal">0</div>
+        <div class="kpi-label">Total Entries</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon orange">⏳</div>
+        <div class="kpi-value" id="kpiOpen">0</div>
+        <div class="kpi-label">Open / Pending</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon green">✅</div>
+        <div class="kpi-value" id="kpiClosed">0</div>
+        <div class="kpi-label">Completed</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon red">🚨</div>
+        <div class="kpi-value" id="kpiOverdue">0</div>
+        <div class="kpi-label">Overdue</div>
+        <div class="kpi-sub">Est. dispatch date nikal gayi</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon purple">📦</div>
+        <div class="kpi-value" id="kpiPendingQty">0</div>
+        <div class="kpi-label">Total Pending Qty</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon blue">⏱️</div>
+        <div class="kpi-value" id="kpiTAT">0<span class="kpi-unit">days</span></div>
+        <div class="kpi-label">Avg. Turnaround Time</div>
+        <div class="kpi-sub">Receive → Dispatch</div>
+      </div>
+    </div>
+
+    <!-- SECTION: BATTERY vs CHARGER -->
+    <div class="section-title">🔋 Battery vs ⚡ Charger</div>
+    <div class="kpi-grid six">
+      <div class="kpi-card mini bat">
+        <div class="kpi-value" id="kpiBatRcv">0</div>
+        <div class="kpi-label">🔋 Battery Received</div>
+      </div>
+      <div class="kpi-card mini bat">
+        <div class="kpi-value" id="kpiBatDisp">0</div>
+        <div class="kpi-label">🔋 Battery Dispatched</div>
+      </div>
+      <div class="kpi-card mini bat">
+        <div class="kpi-value red-text" id="kpiBatPend">0</div>
+        <div class="kpi-label">🔋 Battery Pending</div>
+      </div>
+      <div class="kpi-card mini chr">
+        <div class="kpi-value" id="kpiChrRcv">0</div>
+        <div class="kpi-label">⚡ Charger Received</div>
+      </div>
+      <div class="kpi-card mini chr">
+        <div class="kpi-value" id="kpiChrDisp">0</div>
+        <div class="kpi-label">⚡ Charger Dispatched</div>
+      </div>
+      <div class="kpi-card mini chr">
+        <div class="kpi-value red-text" id="kpiChrPend">0</div>
+        <div class="kpi-label">⚡ Charger Pending</div>
+      </div>
+    </div>
+
+    <!-- SECTION: TODAY & MONTH -->
+    <div class="section-title">📅 Today & This Month</div>
+    <div class="kpi-grid four">
+      <div class="kpi-card mini">
+        <div class="kpi-value" id="kpiTodayRcv">0</div>
+        <div class="kpi-label">Today Received</div>
+      </div>
+      <div class="kpi-card mini">
+        <div class="kpi-value" id="kpiTodayDisp">0</div>
+        <div class="kpi-label">Today Dispatched</div>
+      </div>
+      <div class="kpi-card mini">
+        <div class="kpi-value" id="kpiMonthRcv">0</div>
+        <div class="kpi-label">This Month Received</div>
+      </div>
+      <div class="kpi-card mini">
+        <div class="kpi-value" id="kpiMonthDisp">0</div>
+        <div class="kpi-label">This Month Dispatched</div>
+      </div>
+    </div>
+
+    <!-- SECTION: WARRANTY & STATUS -->
+    <div class="section-title">🛡️ Warranty & Status</div>
+    <div class="kpi-grid six">
+      <div class="kpi-card mini">
+        <div class="kpi-value green-text" id="kpiWarYes">0</div>
+        <div class="kpi-label">✅ In Warranty</div>
+      </div>
+      <div class="kpi-card mini">
+        <div class="kpi-value red-text" id="kpiWarNo">0</div>
+        <div class="kpi-label">❌ Out of Warranty</div>
+      </div>
+      <div class="kpi-card mini">
+        <div class="kpi-value orange-text" id="kpiWarPartial">0</div>
+        <div class="kpi-label">⚠️ Partial Warranty</div>
+      </div>
+      <div class="kpi-card mini">
+        <div class="kpi-value blue-text" id="kpiStReceived">0</div>
+        <div class="kpi-label">Status: Received</div>
+      </div>
+      <div class="kpi-card mini">
+        <div class="kpi-value orange-text" id="kpiStPartial">0</div>
+        <div class="kpi-label">Partial Dispatch</div>
+      </div>
+      <div class="kpi-card mini">
+        <div class="kpi-value green-text" id="kpiStDispatched">0</div>
+        <div class="kpi-label">Fully Dispatched</div>
+      </div>
+    </div>
+
+    <!-- SECTION: CHARTS -->
+    <div class="section-title">📈 Analysis</div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">Repair Status</div>
+        <div class="chart-wrap small"><canvas id="chartStatus"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Category Split</div>
+        <div class="chart-wrap small"><canvas id="chartCategory"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Warranty Split</div>
+        <div class="chart-wrap small"><canvas id="chartWarranty"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Top Problem Types</div>
+        <div class="chart-wrap"><canvas id="chartProblem"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Battery Types Received</div>
+        <div class="chart-wrap"><canvas id="chartBatteryType"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Received Mode</div>
+        <div class="chart-wrap"><canvas id="chartMode"></canvas></div>
+      </div>
+      <div class="chart-card full">
+        <div class="chart-title">Monthly Trend — Received vs Dispatched (Last 6 Months)</div>
+        <div class="chart-wrap"><canvas id="chartTrend"></canvas></div>
+      </div>
+    </div>
+
+    <!-- SECTION: OVERDUE TABLE -->
+    <div class="section-title red-text">🚨 Overdue Repairs (Action Required)</div>
+    <div class="table-card">
+      <div class="table-scroll">
+        <table class="data-table" id="overdueTable">
+          <thead>
+            <tr>
+              <th>Repair ID</th><th>Customer</th><th>Contact</th><th>Category</th>
+              <th>Received</th><th>Est. Dispatch</th><th>Days Late</th><th>Pending Qty</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="table-empty" id="overdueEmpty" style="display:none">Koi overdue repair nahi hai ✅</div>
+    </div>
+
+    <!-- SECTION: PENDING TABLE -->
+    <div class="section-title">⏳ All Pending Repairs</div>
+    <div class="table-card">
+      <div class="table-scroll">
+        <table class="data-table" id="pendingTable">
+          <thead>
+            <tr>
+              <th>Repair ID</th><th>Customer</th><th>Category</th><th>Problem</th>
+              <th>Received</th><th>🔋 Pending</th><th>⚡ Pending</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="table-empty" id="pendingEmpty" style="display:none">Koi pending repair nahi hai ✅</div>
+    </div>
+
+    <!-- SECTION: RECENT ENTRIES -->
+    <div class="section-title">🕐 Recent Entries (Last 10)</div>
+    <div class="table-card">
+      <div class="table-scroll">
+        <table class="data-table" id="recentTable">
+          <thead>
+            <tr>
+              <th>Repair ID</th><th>Date</th><th>Customer</th><th>Category</th>
+              <th>Problem Type</th><th>Warranty</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer-note">Litpax Technology — Service Management Dashboard · <span id="lastUpdated"></span></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx5vv0PxxjRAUTKhMiKn2u-li9di-psYNEbP0NX2o9RJ4NK53Xz0JzXJBUSjtQnP6A/exec';
+
+let allData = [];
+let charts = {};
+
+// ─── INIT ───────────────────────────────────────────────────────────────────
+
+window.onload = function () {
+  const now = new Date();
+  const opts = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
+  document.getElementById('headerDate').innerHTML =
+    now.toLocaleDateString('en-IN', opts) + '<br>' +
+    now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
+  document.getElementById('filterFrom').addEventListener('change', applyFilters);
+  document.getElementById('filterTo').addEventListener('change', applyFilters);
+
+  loadDashboard();
+};
+
+// ─── DATA LOAD (JSONP) ──────────────────────────────────────────────────────
+
+function loadDashboard() {
+  document.getElementById('loadingBox').style.display = 'block';
+  document.getElementById('errorBox').style.display = 'none';
+  document.getElementById('dashboardContent').style.display = 'none';
+
+  window.handleDashboardData = function (result) {
+    document.getElementById('loadingBox').style.display = 'none';
+    allData = result.data || [];
+    document.getElementById('dashboardContent').style.display = 'block';
+    document.getElementById('lastUpdated').textContent =
+      'Last updated: ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    applyFilters();
+  };
+
+  var oldScript = document.getElementById('dashScript');
+  if (oldScript) oldScript.remove();
+  var script = document.createElement('script');
+  script.id = 'dashScript';
+  script.onerror = function () {
+    document.getElementById('loadingBox').style.display = 'none';
+    document.getElementById('errorBox').style.display = 'block';
+  };
+  script.src = APPS_SCRIPT_URL + '?action=getDashboard&callback=handleDashboardData';
+  document.body.appendChild(script);
+}
+
+// ─── HELPERS ────────────────────────────────────────────────────────────────
+
+function num(v) {
+  const n = parseFloat(String(v).replace(/[^0-9.\-]/g, ''));
+  return isNaN(n) ? 0 : n;
+}
+
+// "yyyy-mm-dd", "dd/mm/yyyy", "dd-mm-yyyy" sab handle
+function parseDate(str) {
+  if (!str) return null;
+  str = String(str).trim();
+  let m = str.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/);
+  if (m) return new Date(+m[1], +m[2] - 1, +m[3]);
+  m = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
+  if (m) return new Date(+m[3], +m[2] - 1, +m[1]);
+  const d = new Date(str);
+  return isNaN(d) ? null : d;
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function sameDay(a, b) {
+  return a && b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
+}
+
+function set(id, val) { document.getElementById(id).textContent = val; }
+function sum(rows, key) { return rows.reduce((s, r) => s + (r[key] || 0), 0); }
+
+// ─── ROW NORMALIZE (exact sheet columns) ────────────────────────────────────
+
+function normalizeRow(r) {
+  let batRcv = num(r['Battery Qty Received']);
+  let chrRcv = num(r['Charger Qty Received']);
+  const totalRcv = num(r['Total Received Qty']);
+  const batDisp = num(r['Battery Dispatch Qty']);
+  const chrDisp = num(r['Charger Dispatch Qty']);
+  const totalDisp = num(r['Total Dispatched Qty']);
+
+  // Purani rows fallback (GAS jaisa hi)
+  if (batRcv === 0 && chrRcv === 0 && totalRcv > 0) batRcv = totalRcv;
+
+  const batPend = Math.max(0, batRcv - batDisp);
+  const chrPend = Math.max(0, chrRcv - chrDisp);
+
+  const sheetPending = String(r['Pending Qty'] || '').trim();
+  const pendingQty = sheetPending !== '' ? num(sheetPending) : Math.max(0, (totalRcv || batRcv + chrRcv) - totalDisp);
+
+  return {
+    repairId: String(r['Repair ID'] || '').trim(),
+    receivingDate: parseDate(r['Receiving Date']),
+    dispatchDate: parseDate(r['Dispatch Date']),
+    estDispatchDate: parseDate(r['Estimated Dispatch Date']),
+    customer: String(r['Customer Name'] || '').trim(),
+    contact: String(r['Contact No'] || '').trim(),
+    category: String(r['Category'] || 'Battery').trim(),
+    batteryType: String(r['Battery Type'] || '').trim(),
+    problemType: String(r['Problem Type'] || '').trim(),
+    receivedMode: String(r['Received Mode'] || '').trim(),
+    warranty: String(r['Warranty'] || '').trim(),
+    status: String(r['Repair Status'] || 'Received').trim(),
+    batRcv, chrRcv, batDisp, chrDisp, batPend, chrPend, pendingQty,
+    totalRcv: totalRcv || (batRcv + chrRcv), totalDisp
+  };
+}
+
+// ─── FILTERS ────────────────────────────────────────────────────────────────
+
+function quickFilter(type, btn) {
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+
+  const today = new Date();
+  const toStr = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+
+  if (type === 'today') {
+    document.getElementById('filterFrom').value = toStr(today);
+    document.getElementById('filterTo').value = toStr(today);
+  } else if (type === '7d') {
+    const from = new Date(); from.setDate(from.getDate() - 6);
+    document.getElementById('filterFrom').value = toStr(from);
+    document.getElementById('filterTo').value = toStr(today);
+  } else if (type === 'month') {
+    const from = new Date(today.getFullYear(), today.getMonth(), 1);
+    document.getElementById('filterFrom').value = toStr(from);
+    document.getElementById('filterTo').value = toStr(today);
+  } else {
+    document.getElementById('filterFrom').value = '';
+    document.getElementById('filterTo').value = '';
+  }
+  applyFilters();
+}
+
+function applyFilters() {
+  const fromVal = document.getElementById('filterFrom').value;
+  const toVal = document.getElementById('filterTo').value;
+  const from = fromVal ? parseDate(fromVal) : null;
+  const to = toVal ? parseDate(toVal) : null;
+  if (to) to.setHours(23, 59, 59);
+
+  const rows = allData.map(normalizeRow).filter(r => r.repairId);
+  const filtered = rows.filter(r => {
+    if (!r.receivingDate) return true;
+    if (from && r.receivingDate < from) return false;
+    if (to && r.receivingDate > to) return false;
+    return true;
+  });
+
+  renderKPIs(filtered, rows);
+  renderCharts(filtered);
+  renderTables(filtered);
+}
+
+// ─── KPIs ───────────────────────────────────────────────────────────────────
+
+function renderKPIs(rows, allRows) {
+  const today = new Date();
+  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+
+  const total = rows.length;
+  const open = rows.filter(r => r.pendingQty > 0).length;
+  const closed = total - open;
+  const overdue = rows.filter(r => r.pendingQty > 0 && r.estDispatchDate && r.estDispatchDate < today && !sameDay(r.estDispatchDate, today)).length;
+  const pendingQty = rows.reduce((s, r) => s + r.pendingQty, 0);
+
+  // Avg TAT (fully dispatched entries)
+  const tatList = rows.filter(r => r.receivingDate && r.dispatchDate)
+    .map(r => (r.dispatchDate - r.receivingDate) / 86400000)
+    .filter(d => d >= 0);
+  const avgTAT = tatList.length ? (tatList.reduce((a, b) => a + b, 0) / tatList.length).toFixed(1) : 0;
+
+  set('kpiTotal', total);
+  set('kpiOpen', open);
+  set('kpiClosed', closed);
+  set('kpiOverdue', overdue);
+  set('kpiPendingQty', pendingQty);
+  document.getElementById('kpiTAT').innerHTML = avgTAT + '<span class="kpi-unit">days</span>';
+
+  set('kpiBatRcv', sum(rows, 'batRcv'));
+  set('kpiBatDisp', sum(rows, 'batDisp'));
+  set('kpiBatPend', sum(rows, 'batPend'));
+  set('kpiChrRcv', sum(rows, 'chrRcv'));
+  set('kpiChrDisp', sum(rows, 'chrDisp'));
+  set('kpiChrPend', sum(rows, 'chrPend'));
+
+  // Today & Month (allRows pe — filter se independent)
+  set('kpiTodayRcv', allRows.filter(r => sameDay(r.receivingDate, today)).length);
+  set('kpiTodayDisp', allRows.filter(r => sameDay(r.dispatchDate, today)).length);
+  set('kpiMonthRcv', allRows.filter(r => r.receivingDate && r.receivingDate >= monthStart).length);
+  set('kpiMonthDisp', allRows.filter(r => r.dispatchDate && r.dispatchDate >= monthStart).length);
+
+  set('kpiWarYes', rows.filter(r => r.warranty === 'Yes').length);
+  set('kpiWarNo', rows.filter(r => r.warranty === 'No').length);
+  set('kpiWarPartial', rows.filter(r => r.warranty === 'Partial').length);
+  set('kpiStReceived', rows.filter(r => r.status === 'Received').length);
+  set('kpiStPartial', rows.filter(r => r.status === 'Partial Dispatch').length);
+  set('kpiStDispatched', rows.filter(r => r.status === 'Dispatched').length);
+}
+
+// ─── CHARTS ─────────────────────────────────────────────────────────────────
+
+const BLUES = ['#1a5fd8', '#4d84e3', '#80a9ec', '#b3cef5', '#0d1526', '#5a6080'];
+const STATUS_COLORS = { 'Received': '#1a5fd8', 'Partial Dispatch': '#f9a825', 'Dispatched': '#00b894' };
+
+function countBy(rows, key, fallback) {
+  const map = {};
+  rows.forEach(r => {
+    const v = r[key] || fallback || 'Unknown';
+    map[v] = (map[v] || 0) + 1;
+  });
+  return map;
+}
+
+function makeChart(id, config) {
+  if (charts[id]) charts[id].destroy();
+  charts[id] = new Chart(document.getElementById(id), config);
+}
+
+function renderCharts(rows) {
+  Chart.defaults.font.family = "'IBM Plex Sans', sans-serif";
+  Chart.defaults.font.size = 11;
+  Chart.defaults.color = '#5a6080';
+
+  // 1. Repair Status doughnut
+  const statusMap = countBy(rows, 'status');
+  makeChart('chartStatus', {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(statusMap),
+      datasets: [{
+        data: Object.values(statusMap),
+        backgroundColor: Object.keys(statusMap).map((k, i) => STATUS_COLORS[k] || BLUES[i % BLUES.length]),
+        borderWidth: 2, borderColor: '#fff'
+      }]
+    },
+    options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // 2. Category doughnut
+  const catMap = countBy(rows, 'category');
+  makeChart('chartCategory', {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(catMap),
+      datasets: [{ data: Object.values(catMap), backgroundColor: ['#1a5fd8', '#00b894', '#7c3aed', '#f9a825'], borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // 3. Warranty doughnut
+  const warMap = countBy(rows, 'warranty', 'Not Set');
+  makeChart('chartWarranty', {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(warMap),
+      datasets: [{
+        data: Object.values(warMap),
+        backgroundColor: Object.keys(warMap).map(k => k === 'Yes' ? '#00b894' : k === 'No' ? '#e17055' : k === 'Partial' ? '#f9a825' : '#b3cef5'),
+        borderWidth: 2, borderColor: '#fff'
+      }]
+    },
+    options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // 4. Top Problem Types (horizontal bar, top 8)
+  const probMap = countBy(rows, 'problemType', 'Not Set');
+  const probSorted = Object.entries(probMap).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  makeChart('chartProblem', {
+    type: 'bar',
+    data: {
+      labels: probSorted.map(p => p[0]),
+      datasets: [{ data: probSorted.map(p => p[1]), backgroundColor: '#1a5fd8', borderRadius: 6, barThickness: 14 }]
+    },
+    options: {
+      indexAxis: 'y', maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { grid: { color: '#eef0f8' }, ticks: { precision: 0 } }, y: { grid: { display: false } } }
+    }
+  });
+
+  // 5. Battery Types (bar)
+  const btMap = countBy(rows.filter(r => r.batteryType), 'batteryType');
+  const btSorted = Object.entries(btMap).sort((a, b) => b[1] - a[1]);
+  makeChart('chartBatteryType', {
+    type: 'bar',
+    data: {
+      labels: btSorted.map(p => p[0]),
+      datasets: [{ data: btSorted.map(p => p[1]), backgroundColor: '#4d84e3', borderRadius: 6, barThickness: 20 }]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { grid: { color: '#eef0f8' }, ticks: { precision: 0 } }, x: { grid: { display: false } } }
+    }
+  });
+
+  // 6. Received Mode doughnut
+  const modeMap = countBy(rows, 'receivedMode', 'Not Set');
+  makeChart('chartMode', {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(modeMap),
+      datasets: [{ data: Object.values(modeMap), backgroundColor: BLUES, borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom' } } }
+  });
+
+  // 7. Monthly trend — last 6 months
+  const months = [];
+  const now = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({ y: d.getFullYear(), m: d.getMonth(), label: d.toLocaleDateString('en-IN', { month: 'short', year: '2-digit' }) });
+  }
+  const rcvSeries = months.map(mo => rows.filter(r => r.receivingDate && r.receivingDate.getFullYear() === mo.y && r.receivingDate.getMonth() === mo.m).length);
+  const dispSeries = months.map(mo => rows.filter(r => r.dispatchDate && r.dispatchDate.getFullYear() === mo.y && r.dispatchDate.getMonth() === mo.m).length);
+
+  makeChart('chartTrend', {
+    type: 'line',
+    data: {
+      labels: months.map(m => m.label),
+      datasets: [
+        { label: 'Received', data: rcvSeries, borderColor: '#1a5fd8', backgroundColor: 'rgba(26,95,216,0.08)', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: '#1a5fd8' },
+        { label: 'Dispatched', data: dispSeries, borderColor: '#00b894', backgroundColor: 'rgba(0,184,148,0.06)', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: '#00b894' }
+      ]
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom' } },
+      scales: { y: { grid: { color: '#eef0f8' }, ticks: { precision: 0 } }, x: { grid: { display: false } } }
+    }
+  });
+}
+
+// ─── TABLES ─────────────────────────────────────────────────────────────────
+
+function statusBadge(status) {
+  let cls = 'other';
+  if (status === 'Received') cls = 'received';
+  else if (status === 'Dispatched') cls = 'dispatched';
+  else if (status === 'Partial Dispatch') cls = 'partialdisp';
+  return '<span class="badge ' + cls + '">' + status + '</span>';
+}
+
+function renderTables(rows) {
+  const today = new Date();
+
+  // Overdue
+  const overdue = rows
+    .filter(r => r.pendingQty > 0 && r.estDispatchDate && r.estDispatchDate < today && !sameDay(r.estDispatchDate, today))
+    .sort((a, b) => a.estDispatchDate - b.estDispatchDate);
+  const oBody = document.querySelector('#overdueTable tbody');
+  oBody.innerHTML = overdue.map(r => {
+    const daysLate = Math.floor((today - r.estDispatchDate) / 86400000);
+    return '<tr>' +
+      '<td class="mono">' + r.repairId + '</td>' +
+      '<td>' + r.customer + '</td>' +
+      '<td>' + r.contact + '</td>' +
+      '<td>' + r.category + '</td>' +
+      '<td>' + fmtDate(r.receivingDate) + '</td>' +
+      '<td>' + fmtDate(r.estDispatchDate) + '</td>' +
+      '<td><span class="badge late">' + daysLate + ' din</span></td>' +
+      '<td><strong>' + r.pendingQty + '</strong></td>' +
+    '</tr>';
+  }).join('');
+  document.getElementById('overdueTable').style.display = overdue.length ? '' : 'none';
+  document.getElementById('overdueEmpty').style.display = overdue.length ? 'none' : 'block';
+
+  // Pending
+  const pending = rows.filter(r => r.pendingQty > 0).sort((a, b) => (a.receivingDate || 0) - (b.receivingDate || 0));
+  const pBody = document.querySelector('#pendingTable tbody');
+  pBody.innerHTML = pending.map(r => '<tr>' +
+      '<td class="mono">' + r.repairId + '</td>' +
+      '<td>' + r.customer + '</td>' +
+      '<td>' + r.category + '</td>' +
+      '<td>' + (r.problemType || '—') + '</td>' +
+      '<td>' + fmtDate(r.receivingDate) + '</td>' +
+      '<td>' + r.batPend + '</td>' +
+      '<td>' + r.chrPend + '</td>' +
+      '<td>' + statusBadge(r.status) + '</td>' +
+    '</tr>').join('');
+  document.getElementById('pendingTable').style.display = pending.length ? '' : 'none';
+  document.getElementById('pendingEmpty').style.display = pending.length ? 'none' : 'block';
+
+  // Recent 10
+  const recent = [...rows].sort((a, b) => (b.receivingDate || 0) - (a.receivingDate || 0)).slice(0, 10);
+  const rBody = document.querySelector('#recentTable tbody');
+  rBody.innerHTML = recent.map(r => '<tr>' +
+      '<td class="mono">' + r.repairId + '</td>' +
+      '<td>' + fmtDate(r.receivingDate) + '</td>' +
+      '<td>' + r.customer + '</td>' +
+      '<td>' + r.category + '</td>' +
+      '<td>' + (r.problemType || '—') + '</td>' +
+      '<td>' + (r.warranty || '—') + '</td>' +
+      '<td>' + statusBadge(r.status) + '</td>' +
+    '</tr>').join('');
+}
+
+// ─── TOAST ──────────────────────────────────────────────────────────────────
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
