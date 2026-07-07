@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Litpax — Service Dashboard</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{--primary:#0d1526;--blue:#1a5fd8;--surface2:#f7f8fc;--surface3:#eef0f8;--border:#dde1f0;--text:#111827;--text2:#5a6080;--text3:#8890b0;--success:#00b894;--warning:#f9a825;--danger:#e17055;--accent:#e94560;--radius:10px;--shadow:0 2px 16px rgba(13,21,38,0.08);}
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -43,6 +42,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
 /* ─── KPI CARDS ─── */
 .kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;}
 .kpi-grid.four{grid-template-columns:repeat(4,1fr);}
+.kpi-grid.three{grid-template-columns:repeat(3,1fr);}
 .kpi-grid.six{grid-template-columns:repeat(6,1fr);}
 @media(max-width:1000px){.kpi-grid,.kpi-grid.six{grid-template-columns:repeat(3,1fr);}.kpi-grid.four{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:600px){.kpi-grid,.kpi-grid.six,.kpi-grid.four{grid-template-columns:repeat(2,1fr);}}
@@ -154,7 +154,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
 
     <!-- SECTION: OVERVIEW -->
     <div class="section-title">📊 Overview</div>
-    <div class="kpi-grid">
+    <div class="kpi-grid three">
       <div class="kpi-card">
         <div class="kpi-icon blue">🗂️</div>
         <div class="kpi-value" id="kpiTotal">0</div>
@@ -169,23 +169,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
         <div class="kpi-icon green">✅</div>
         <div class="kpi-value" id="kpiClosed">0</div>
         <div class="kpi-label">Completed</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon red">🚨</div>
-        <div class="kpi-value" id="kpiOverdue">0</div>
-        <div class="kpi-label">Overdue</div>
-        <div class="kpi-sub">Est. dispatch date nikal gayi</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon purple">📦</div>
-        <div class="kpi-value" id="kpiPendingQty">0</div>
-        <div class="kpi-label">Total Pending Qty</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon blue">⏱️</div>
-        <div class="kpi-value" id="kpiTAT">0<span class="kpi-unit">days</span></div>
-        <div class="kpi-label">Avg. Turnaround Time</div>
-        <div class="kpi-sub">Receive → Dispatch</div>
       </div>
     </div>
 
@@ -236,68 +219,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
       <div class="kpi-card mini">
         <div class="kpi-value" id="kpiMonthDisp">0</div>
         <div class="kpi-label">This Month Dispatched</div>
-      </div>
-    </div>
-
-    <!-- SECTION: WARRANTY & STATUS -->
-    <div class="section-title">🛡️ Warranty & Status</div>
-    <div class="kpi-grid six">
-      <div class="kpi-card mini">
-        <div class="kpi-value green-text" id="kpiWarYes">0</div>
-        <div class="kpi-label">✅ In Warranty</div>
-      </div>
-      <div class="kpi-card mini">
-        <div class="kpi-value red-text" id="kpiWarNo">0</div>
-        <div class="kpi-label">❌ Out of Warranty</div>
-      </div>
-      <div class="kpi-card mini">
-        <div class="kpi-value orange-text" id="kpiWarPartial">0</div>
-        <div class="kpi-label">⚠️ Partial Warranty</div>
-      </div>
-      <div class="kpi-card mini">
-        <div class="kpi-value blue-text" id="kpiStReceived">0</div>
-        <div class="kpi-label">Status: Received</div>
-      </div>
-      <div class="kpi-card mini">
-        <div class="kpi-value orange-text" id="kpiStPartial">0</div>
-        <div class="kpi-label">Partial Dispatch</div>
-      </div>
-      <div class="kpi-card mini">
-        <div class="kpi-value green-text" id="kpiStDispatched">0</div>
-        <div class="kpi-label">Fully Dispatched</div>
-      </div>
-    </div>
-
-    <!-- SECTION: CHARTS -->
-    <div class="section-title">📈 Analysis</div>
-    <div class="chart-grid">
-      <div class="chart-card">
-        <div class="chart-title">Repair Status</div>
-        <div class="chart-wrap small"><canvas id="chartStatus"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Category Split</div>
-        <div class="chart-wrap small"><canvas id="chartCategory"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Warranty Split</div>
-        <div class="chart-wrap small"><canvas id="chartWarranty"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Top Problem Types</div>
-        <div class="chart-wrap"><canvas id="chartProblem"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Battery Types Received</div>
-        <div class="chart-wrap"><canvas id="chartBatteryType"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-title">Received Mode</div>
-        <div class="chart-wrap"><canvas id="chartMode"></canvas></div>
-      </div>
-      <div class="chart-card full">
-        <div class="chart-title">Monthly Trend — Received vs Dispatched (Last 6 Months)</div>
-        <div class="chart-wrap"><canvas id="chartTrend"></canvas></div>
       </div>
     </div>
 
@@ -362,7 +283,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx5vv0PxxjRAUTKhMiKn2u-li9di-psYNEbP0NX2o9RJ4NK53Xz0JzXJBUSjtQnP6A/exec';
 
 let allData = [];
-let charts = {};
 
 // ─── INIT ───────────────────────────────────────────────────────────────────
 
@@ -518,7 +438,6 @@ function applyFilters() {
   });
 
   renderKPIs(filtered, rows);
-  renderCharts(filtered);
   renderTables(filtered);
 }
 
@@ -531,21 +450,10 @@ function renderKPIs(rows, allRows) {
   const total = rows.length;
   const open = rows.filter(r => r.pendingQty > 0).length;
   const closed = total - open;
-  const overdue = rows.filter(r => r.pendingQty > 0 && r.estDispatchDate && r.estDispatchDate < today && !sameDay(r.estDispatchDate, today)).length;
-  const pendingQty = rows.reduce((s, r) => s + r.pendingQty, 0);
-
-  // Avg TAT (fully dispatched entries)
-  const tatList = rows.filter(r => r.receivingDate && r.dispatchDate)
-    .map(r => (r.dispatchDate - r.receivingDate) / 86400000)
-    .filter(d => d >= 0);
-  const avgTAT = tatList.length ? (tatList.reduce((a, b) => a + b, 0) / tatList.length).toFixed(1) : 0;
 
   set('kpiTotal', total);
   set('kpiOpen', open);
   set('kpiClosed', closed);
-  set('kpiOverdue', overdue);
-  set('kpiPendingQty', pendingQty);
-  document.getElementById('kpiTAT').innerHTML = avgTAT + '<span class="kpi-unit">days</span>';
 
   set('kpiBatRcv', sum(rows, 'batRcv'));
   set('kpiBatDisp', sum(rows, 'batDisp'));
@@ -559,148 +467,6 @@ function renderKPIs(rows, allRows) {
   set('kpiTodayDisp', allRows.filter(r => sameDay(r.dispatchDate, today)).length);
   set('kpiMonthRcv', allRows.filter(r => r.receivingDate && r.receivingDate >= monthStart).length);
   set('kpiMonthDisp', allRows.filter(r => r.dispatchDate && r.dispatchDate >= monthStart).length);
-
-  set('kpiWarYes', rows.filter(r => r.warranty === 'Yes').length);
-  set('kpiWarNo', rows.filter(r => r.warranty === 'No').length);
-  set('kpiWarPartial', rows.filter(r => r.warranty === 'Partial').length);
-  set('kpiStReceived', rows.filter(r => r.status === 'Received').length);
-  set('kpiStPartial', rows.filter(r => r.status === 'Partial Dispatch').length);
-  set('kpiStDispatched', rows.filter(r => r.status === 'Dispatched').length);
-}
-
-// ─── CHARTS ─────────────────────────────────────────────────────────────────
-
-const BLUES = ['#1a5fd8', '#4d84e3', '#80a9ec', '#b3cef5', '#0d1526', '#5a6080'];
-const STATUS_COLORS = { 'Received': '#1a5fd8', 'Partial Dispatch': '#f9a825', 'Dispatched': '#00b894' };
-
-function countBy(rows, key, fallback) {
-  const map = {};
-  rows.forEach(r => {
-    const v = r[key] || fallback || 'Unknown';
-    map[v] = (map[v] || 0) + 1;
-  });
-  return map;
-}
-
-function makeChart(id, config) {
-  if (charts[id]) charts[id].destroy();
-  charts[id] = new Chart(document.getElementById(id), config);
-}
-
-function renderCharts(rows) {
-  Chart.defaults.font.family = "'IBM Plex Sans', sans-serif";
-  Chart.defaults.font.size = 11;
-  Chart.defaults.color = '#5a6080';
-
-  // 1. Repair Status doughnut
-  const statusMap = countBy(rows, 'status');
-  makeChart('chartStatus', {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(statusMap),
-      datasets: [{
-        data: Object.values(statusMap),
-        backgroundColor: Object.keys(statusMap).map((k, i) => STATUS_COLORS[k] || BLUES[i % BLUES.length]),
-        borderWidth: 2, borderColor: '#fff'
-      }]
-    },
-    options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom' } } }
-  });
-
-  // 2. Category doughnut
-  const catMap = countBy(rows, 'category');
-  makeChart('chartCategory', {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(catMap),
-      datasets: [{ data: Object.values(catMap), backgroundColor: ['#1a5fd8', '#00b894', '#7c3aed', '#f9a825'], borderWidth: 2, borderColor: '#fff' }]
-    },
-    options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom' } } }
-  });
-
-  // 3. Warranty doughnut
-  const warMap = countBy(rows, 'warranty', 'Not Set');
-  makeChart('chartWarranty', {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(warMap),
-      datasets: [{
-        data: Object.values(warMap),
-        backgroundColor: Object.keys(warMap).map(k => k === 'Yes' ? '#00b894' : k === 'No' ? '#e17055' : k === 'Partial' ? '#f9a825' : '#b3cef5'),
-        borderWidth: 2, borderColor: '#fff'
-      }]
-    },
-    options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom' } } }
-  });
-
-  // 4. Top Problem Types (horizontal bar, top 8)
-  const probMap = countBy(rows, 'problemType', 'Not Set');
-  const probSorted = Object.entries(probMap).sort((a, b) => b[1] - a[1]).slice(0, 8);
-  makeChart('chartProblem', {
-    type: 'bar',
-    data: {
-      labels: probSorted.map(p => p[0]),
-      datasets: [{ data: probSorted.map(p => p[1]), backgroundColor: '#1a5fd8', borderRadius: 6, barThickness: 14 }]
-    },
-    options: {
-      indexAxis: 'y', maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: { x: { grid: { color: '#eef0f8' }, ticks: { precision: 0 } }, y: { grid: { display: false } } }
-    }
-  });
-
-  // 5. Battery Types (bar)
-  const btMap = countBy(rows.filter(r => r.batteryType), 'batteryType');
-  const btSorted = Object.entries(btMap).sort((a, b) => b[1] - a[1]);
-  makeChart('chartBatteryType', {
-    type: 'bar',
-    data: {
-      labels: btSorted.map(p => p[0]),
-      datasets: [{ data: btSorted.map(p => p[1]), backgroundColor: '#4d84e3', borderRadius: 6, barThickness: 20 }]
-    },
-    options: {
-      maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: { y: { grid: { color: '#eef0f8' }, ticks: { precision: 0 } }, x: { grid: { display: false } } }
-    }
-  });
-
-  // 6. Received Mode doughnut
-  const modeMap = countBy(rows, 'receivedMode', 'Not Set');
-  makeChart('chartMode', {
-    type: 'doughnut',
-    data: {
-      labels: Object.keys(modeMap),
-      datasets: [{ data: Object.values(modeMap), backgroundColor: BLUES, borderWidth: 2, borderColor: '#fff' }]
-    },
-    options: { maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom' } } }
-  });
-
-  // 7. Monthly trend — last 6 months
-  const months = [];
-  const now = new Date();
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    months.push({ y: d.getFullYear(), m: d.getMonth(), label: d.toLocaleDateString('en-IN', { month: 'short', year: '2-digit' }) });
-  }
-  const rcvSeries = months.map(mo => rows.filter(r => r.receivingDate && r.receivingDate.getFullYear() === mo.y && r.receivingDate.getMonth() === mo.m).length);
-  const dispSeries = months.map(mo => rows.filter(r => r.dispatchDate && r.dispatchDate.getFullYear() === mo.y && r.dispatchDate.getMonth() === mo.m).length);
-
-  makeChart('chartTrend', {
-    type: 'line',
-    data: {
-      labels: months.map(m => m.label),
-      datasets: [
-        { label: 'Received', data: rcvSeries, borderColor: '#1a5fd8', backgroundColor: 'rgba(26,95,216,0.08)', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: '#1a5fd8' },
-        { label: 'Dispatched', data: dispSeries, borderColor: '#00b894', backgroundColor: 'rgba(0,184,148,0.06)', fill: true, tension: 0.35, pointRadius: 4, pointBackgroundColor: '#00b894' }
-      ]
-    },
-    options: {
-      maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom' } },
-      scales: { y: { grid: { color: '#eef0f8' }, ticks: { precision: 0 } }, x: { grid: { display: false } } }
-    }
-  });
 }
 
 // ─── TABLES ─────────────────────────────────────────────────────────────────
