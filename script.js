@@ -54,16 +54,15 @@ function fetchNextSrNo() {
     document.getElementById('repairIdDisplay').textContent = repairId;
   };
 
-  var oldScript = document.getElementById('srNoScript');
+    var oldScript = document.getElementById('srNoScript');
   if (oldScript) oldScript.remove();
   var script = document.createElement('script');
   script.id = 'srNoScript';
   script.onerror = function () {
-    nextSrNo = 1;
-    document.getElementById('r_srNo').value = nextSrNo;
+    document.getElementById('r_srNo').value = '';
     document.getElementById('r_srNo').placeholder = '';
-    repairId = generateRepairId(nextSrNo);
-    document.getElementById('repairIdDisplay').textContent = repairId;
+    document.getElementById('repairIdDisplay').textContent = 'Error — reload karo';
+    showToast('⚠️ Repair ID load nahi hui, page reload karke dobara try karo');
   };
   script.src = APPS_SCRIPT_URL + '?action=getPending&callback=handleSrNoData';
   document.body.appendChild(script);
