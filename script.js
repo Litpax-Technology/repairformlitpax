@@ -486,6 +486,7 @@ function submitDispatch() {
     'Charger Dispatch Qty': chrQty,
     'Pending Qty': document.getElementById('d_pendingQty').value,
     'Repair Status': document.getElementById('d_repairStatus').value,
+    'Actual Problem Found': document.getElementById('d_actualProblem').value,
     'Transport Details (Outward)': document.getElementById('d_transportOutward').value,
     'Dispatched By': document.getElementById('d_dispatchedBy').value,
     'Any Cost': document.getElementById('d_anyCost').value,
@@ -501,15 +502,51 @@ function submitDispatch() {
   document.getElementById('dSection2').classList.remove('active');
   document.getElementById('dispatchSuccess').style.display = 'block';
   document.getElementById('successDispatchId').textContent = data['Repair ID'];
+
+  const dNow = new Date();
+  const dDateStr = dNow.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  const dTimeStr = dNow.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+
   document.getElementById('dispatchSummary').innerHTML = `
-    <div class="summary-row"><span>Repair ID</span><span style="color:#00856e;font-family:'IBM Plex Mono',monospace;font-weight:700">${data['Repair ID']}</span></div>
-    <div class="summary-row"><span>Customer</span><span>${selectedRepairData?.customerName || '—'}</span></div>
-    <div class="summary-row"><span>Dispatch Date</span><span>${data['Dispatch Date']}</span></div>
-    <div class="summary-row"><span>Battery Dispatched</span><span>${batQty}</span></div>
-    <div class="summary-row"><span>Charger Dispatched</span><span>${chrQty}</span></div>
-    <div class="summary-row"><span>Pending Qty</span><span>${data['Pending Qty']}</span></div>
-    <div class="summary-row"><span>Status</span><span>${data['Repair Status']}</span></div>
-    <div class="summary-row"><span>Dispatched By</span><span>${data['Dispatched By']}</span></div>`;
+    <div style="background:white;border-radius:12px;border:1px solid #dde1f0;padding:24px;">
+      <div class="receipt-header">
+        <div>
+          <div class="receipt-logo">LITPAX</div>
+          <div class="receipt-title">Battery / Charger Service Center</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px;color:#5a6080;">Dispatch Slip</div>
+          <div style="font-size:11px;color:#8890b0;">${dDateStr} ${dTimeStr}</div>
+        </div>
+      </div>
+      <div style="background:#e8f8f4;border-radius:6px;padding:10px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">
+        <span style="font-size:11px;color:#00856e;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;">Repair ID</span>
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:15px;font-weight:700;color:#00856e;">${data['Repair ID']}</span>
+      </div>
+      <div class="receipt-section">Customer Details</div>
+      <table class="receipt-table">
+        <tr><td>Customer Name</td><td>${selectedRepairData?.customerName || '—'}</td></tr>
+        <tr><td>Contact No.</td><td>${selectedRepairData?.contactNo || '—'}</td></tr>
+      </table>
+      <div class="receipt-section" style="margin-top:8px;">Dispatch Details</div>
+      <table class="receipt-table">
+        <tr><td>Dispatch Date</td><td>${data['Dispatch Date']}</td></tr>
+        <tr><td>Battery Dispatched</td><td>${batQty}</td></tr>
+        <tr><td>Charger Dispatched</td><td>${chrQty}</td></tr>
+        <tr><td>Pending Qty</td><td>${data['Pending Qty']}</td></tr>
+        <tr><td>Repair Status</td><td>${data['Repair Status']}</td></tr>
+        <tr><td>Actual Problem Found</td><td>${data['Actual Problem Found'] || '—'}</td></tr>
+        <tr><td>Any Cost</td><td>${data['Any Cost'] || '—'}</td></tr>
+        <tr><td>Transport (Outward)</td><td>${data['Transport Details (Outward)'] || '—'}</td></tr>
+        <tr><td>Dispatched By</td><td>${data['Dispatched By']}</td></tr>
+        <tr><td>Remarks</td><td>${data['Dispatch Remarks'] || '—'}</td></tr>
+      </table>
+      <div class="receipt-footer">
+        <span>Litpax Technology — Service Management System</span>
+        <span>${dDateStr} ${dTimeStr}</span>
+      </div>
+    </div>`;
+
   window.scrollTo(0, 0);
 }
 
