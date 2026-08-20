@@ -367,7 +367,7 @@
             <label>Pending Qty (Auto)</label>
             <input type="text" id="d_pendingQty" readonly style="background:#f0f6ff;border-color:#b3d0f7;color:var(--blue);font-weight:600;font-family:'IBM Plex Mono',monospace">
           </div>
-          <div class="form-group">
+                    <div class="form-group">
             <label>Repair Status <span class="req">*</span></label>
             <select id="d_repairStatus" required>
               <option value="">-- Select --</option>
@@ -375,6 +375,29 @@
               <option>Repaired — Partial</option>
               <option>Not Repairable</option>
               <option>Replaced</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Actual Problem Found</label>
+            <select id="d_actualProblem">
+              <option value="">-- Select --</option>
+              <option>No issue</option>
+              <option>Disbalance</option>
+              <option>Water damage</option>
+              <option>BMS fault</option>
+              <option>BMS + cell change</option>
+              <option>Dead cell</option>
+              <option>Low capacity</option>
+              <option>Seal opened</option>
+              <option>Series wire</option>
+              <option>Spot / laser issue</option>
+              <option>Output wire +ve , -ve</option>
+              <option>Thimble short / burnt</option>
+              <option>Transportation damage</option>
+              <option>Battery burnt (fire case)</option>
+              <option>Cells leak</option>
+              <option>Not repair / Rejected</option>
+              <option>Out of warranty</option>
             </select>
           </div>
           <div class="form-group full">
