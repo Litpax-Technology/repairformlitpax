@@ -1,4 +1,4 @@
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzgpq7aM3FjHcINT2nysgo8ayQglh7tohE-qZzth7ORsdUYEGIxbFv-pBfA6mLUIGWx/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmmVTbwTDJfiQIVdf0gtg3k4SkAHubhXJe3-eRrVRWX3qQ2v2x7eJGcI3ScacSomxw/exec';
 
 let repairId = '';
 let rCurrentStep = 1;
