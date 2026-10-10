@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Litpax — Service Dashboard</title>
+<title>Litpax — Service Analytics</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{--primary:#0d1526;--blue:#1a5fd8;--surface2:#f7f8fc;--surface3:#eef0f8;--border:#dde1f0;--text:#111827;--text2:#5a6080;--text3:#8890b0;--success:#00b894;--warning:#f9a825;--danger:#e17055;--accent:#e94560;--radius:10px;--shadow:0 2px 16px rgba(13,21,38,0.08);}
@@ -12,18 +12,19 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
 
 /* ─── HEADER ─── */
 .header{background:var(--primary);color:white;position:sticky;top:0;z-index:100;box-shadow:0 2px 12px rgba(13,21,38,0.22);}
-.header-inner{max-width:1200px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px;}
+.header-inner{max-width:1280px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:14px;}
 .logo{background:var(--blue);color:white;font-size:12px;font-weight:700;padding:5px 10px;border-radius:6px;letter-spacing:1px;font-family:'IBM Plex Mono',monospace;}
 .header-text h1{font-size:15px;font-weight:600;color:white;}
 .header-text p{font-size:11px;color:rgba(255,255,255,0.5);margin-top:1px;}
 .header-link{margin-left:auto;font-size:12px;color:rgba(255,255,255,0.75);text-decoration:none;border:1px solid rgba(255,255,255,0.25);padding:6px 12px;border-radius:6px;transition:all 0.2s;white-space:nowrap;}
 .header-link:hover{background:rgba(255,255,255,0.1);color:white;}
 .header-date{text-align:right;font-family:'IBM Plex Mono',monospace;font-size:11px;color:rgba(255,255,255,0.45);line-height:1.6;}
+@media(max-width:600px){.header-date,.header-text p{display:none;}}
 
-.main{max-width:1200px;margin:0 auto;padding:20px;}
+.main{max-width:1280px;margin:0 auto;padding:20px;}
 
 /* ─── FILTER BAR ─── */
-.filter-bar{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:22px;box-shadow:var(--shadow);}
+.filter-bar{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:14px 16px;display:flex;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px;box-shadow:var(--shadow);}
 .filter-group{display:flex;flex-direction:column;gap:4px;}
 .filter-group label{font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;}
 .filter-group input{padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);outline:none;}
@@ -35,30 +36,34 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
 .btn-refresh{margin-left:auto;padding:9px 18px;border-radius:8px;border:none;background:var(--blue);color:white;font-size:13px;font-weight:600;cursor:pointer;font-family:'IBM Plex Sans',sans-serif;transition:all 0.2s;}
 .btn-refresh:hover{background:#1450b8;}
 
+.range-bar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;font-size:12px;color:var(--text2);margin-bottom:4px;}
+.note-inline{background:#fff8e6;color:#8a6d00;border:1px solid #f3e1a6;padding:5px 10px;border-radius:6px;font-size:11px;}
+
 /* ─── SECTION TITLES ─── */
-.section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin:26px 0 12px;display:flex;align-items:center;gap:8px;}
-.section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text2);margin:26px 0 12px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--border);min-width:20px;order:2;}
+.section-title .toggle-group{order:3;}
+.title-note{font-size:11px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--text3);}
+
+.toggle-group{display:flex;background:white;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;}
+.toggle{padding:6px 14px;border:none;background:white;font-size:12px;font-weight:600;color:var(--text2);cursor:pointer;font-family:'IBM Plex Sans',sans-serif;text-transform:none;letter-spacing:0;}
+.toggle.active{background:var(--primary);color:white;}
 
 /* ─── KPI CARDS ─── */
 .kpi-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;}
 .kpi-grid.four{grid-template-columns:repeat(4,1fr);}
-.kpi-grid.three{grid-template-columns:repeat(3,1fr);}
 .kpi-grid.six{grid-template-columns:repeat(6,1fr);}
 @media(max-width:1000px){.kpi-grid,.kpi-grid.six{grid-template-columns:repeat(3,1fr);}.kpi-grid.four{grid-template-columns:repeat(2,1fr);}}
 @media(max-width:600px){.kpi-grid,.kpi-grid.six,.kpi-grid.four{grid-template-columns:repeat(2,1fr);}}
 
 .kpi-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);transition:all 0.2s;position:relative;overflow:hidden;}
 .kpi-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(13,21,38,0.12);}
-.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--blue);opacity:0;transition:opacity 0.2s;}
-.kpi-card:hover::before{opacity:1;}
 .kpi-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:10px;}
 .kpi-icon.blue{background:#e8f0fe;}
 .kpi-icon.green{background:#e8f8f4;}
 .kpi-icon.orange{background:#fff8e6;}
 .kpi-icon.red{background:#fff0ec;}
-.kpi-icon.purple{background:#f3e8ff;}
 .kpi-value{font-family:'IBM Plex Mono',monospace;font-size:26px;font-weight:700;color:var(--text);line-height:1.1;}
-.kpi-unit{font-size:12px;font-weight:500;color:var(--text3);margin-left:4px;}
 .kpi-label{font-size:12px;color:var(--text2);font-weight:500;margin-top:4px;}
 .kpi-sub{font-size:10px;color:var(--text3);margin-top:3px;}
 .kpi-card.mini{padding:14px;}
@@ -67,29 +72,40 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
 .kpi-card.chr{border-top:3px solid var(--success);}
 .red-text{color:var(--accent)!important;}
 .green-text{color:#00856e!important;}
-.orange-text{color:#9a7b00!important;}
-.blue-text{color:var(--blue)!important;}
 
 /* ─── CHARTS ─── */
 .chart-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.chart-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);}
+.chart-card{background:white;border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);min-width:0;}
 .chart-card.full{grid-column:1/-1;}
-@media(max-width:1000px){.chart-grid{grid-template-columns:1fr 1fr;}}
+.chart-card.two{grid-column:span 2;}
+@media(max-width:1000px){.chart-grid{grid-template-columns:1fr 1fr;}.chart-card.two{grid-column:1/-1;}}
 @media(max-width:600px){.chart-grid{grid-template-columns:1fr;}}
 .chart-title{font-size:12px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:12px;}
 .chart-wrap{position:relative;height:260px;}
 .chart-wrap.small{height:220px;}
+.chart-wrap.tall{height:320px;}
 
 /* ─── TABLES ─── */
 .table-card{background:white;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;}
+.table-head{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.6px;padding:12px 14px;border-bottom:1px solid var(--border);}
 .table-scroll{overflow-x:auto;}
 .data-table{width:100%;border-collapse:collapse;min-width:700px;}
+.data-table.narrow{min-width:0;}
 .data-table th{background:var(--surface3);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:var(--text3);text-align:left;padding:10px 14px;border-bottom:1px solid var(--border);white-space:nowrap;}
 .data-table td{font-size:13px;color:var(--text);padding:10px 14px;border-bottom:1px solid var(--surface3);white-space:nowrap;}
 .data-table tbody tr:hover{background:var(--surface2);}
 .data-table tbody tr:last-child td{border-bottom:none;}
+.avg-table td:not(:first-child),.avg-table th:not(:first-child){text-align:right;font-family:'IBM Plex Mono',monospace;}
+.avg-table td:first-child{font-weight:600;}
+.avg-table td.hl{background:#f3f7ff;font-weight:700;}
+.table-foot{font-size:11px;color:var(--text3);padding:10px 14px;border-top:1px solid var(--surface3);}
+.diff{display:block;font-size:10px;font-weight:600;}
+.diff.up{color:#1a5fd8;}
+.diff.down{color:#9a7b00;}
 .mono{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--blue);}
 .table-empty{text-align:center;padding:30px;color:var(--text2);font-size:13px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:700px){.two-col{grid-template-columns:1fr;}}
 
 .badge{display:inline-block;padding:3px 10px;border-radius:30px;font-size:11px;font-weight:600;}
 .badge.received{background:#e8f0fe;color:var(--blue);}
@@ -97,6 +113,8 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
 .badge.partialdisp{background:#fff8e6;color:#9a7b00;}
 .badge.other{background:var(--surface3);color:var(--text2);}
 .badge.late{background:#fff0ec;color:#c0392b;font-family:'IBM Plex Mono',monospace;}
+.badge.age{background:var(--surface3);color:var(--text2);font-family:'IBM Plex Mono',monospace;}
+.badge.age.old{background:#fff0ec;color:#c0392b;}
 
 /* ─── MISC ─── */
 .loading-box{text-align:center;padding:60px;color:var(--text2);}
@@ -114,8 +132,8 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
   <div class="header-inner">
     <div class="logo">LITPAX</div>
     <div class="header-text">
-      <h1>Service Dashboard</h1>
-      <p>Battery / Charger — Full Overview</p>
+      <h1>Service Analytics Dashboard</h1>
+      <p>Battery / Charger — Inflow, Dispatch, TAT &amp; Trends</p>
     </div>
     <a href="index.html" class="header-link">← Service Entry</a>
     <div class="header-date" id="headerDate"></div>
@@ -138,23 +156,28 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
       <button class="chip" onclick="quickFilter('today', this)">Today</button>
       <button class="chip" onclick="quickFilter('7d', this)">7 Days</button>
       <button class="chip" onclick="quickFilter('month', this)">This Month</button>
+      <button class="chip" onclick="quickFilter('3m', this)">3 Months</button>
       <button class="chip active" onclick="quickFilter('all', this)">All Time</button>
     </div>
     <button class="btn-refresh" onclick="loadDashboard()">↻ Refresh</button>
   </div>
 
-  <!-- LOADING / ERROR -->
   <div class="loading-box" id="loadingBox">
     <div class="loading-spinner"></div>
     <p>Dashboard data load ho raha hai...</p>
   </div>
-  <div class="error-box" id="errorBox">Sheet se data load nahi ho paya. GAS deployment check karo.</div>
+  <div class="error-box" id="errorBox">Sheet se data load nahi ho paya. config.js ka API_URL aur GAS deployment check karo.</div>
 
   <div id="dashboardContent" style="display:none">
 
-    <!-- SECTION: OVERVIEW -->
+    <div class="range-bar">
+      <span>📆 Range: <strong id="rangeLabel">—</strong></span>
+      <span class="note-inline" id="approxNote">ℹ️ Dispatch numbers approx hain — partial dispatch ki sirf last date sheet mein hai. Dispatch Log lagne ke baad exact ho jayenge.</span>
+    </div>
+
+    <!-- OVERVIEW -->
     <div class="section-title">📊 Overview</div>
-    <div class="kpi-grid three">
+    <div class="kpi-grid four">
       <div class="kpi-card">
         <div class="kpi-icon blue">🗂️</div>
         <div class="kpi-value" id="kpiTotal">0</div>
@@ -170,68 +193,214 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
         <div class="kpi-value" id="kpiClosed">0</div>
         <div class="kpi-label">Completed</div>
       </div>
+      <div class="kpi-card">
+        <div class="kpi-icon red">🚨</div>
+        <div class="kpi-value red-text" id="kpiOverdue">0</div>
+        <div class="kpi-label">Overdue</div>
+      </div>
     </div>
 
-    <!-- SECTION: BATTERY vs CHARGER -->
-    <div class="section-title">🔋 Battery vs ⚡ Charger</div>
+    <!-- AVERAGES -->
+    <div class="section-title">📈 Average Analysis</div>
     <div class="kpi-grid six">
       <div class="kpi-card mini bat">
-        <div class="kpi-value" id="kpiBatRcv">0</div>
-        <div class="kpi-label">🔋 Battery Received</div>
+        <div class="kpi-value" id="avgBatIn">—</div>
+        <div class="kpi-label">🔋 Battery Aati / Week</div>
+        <div class="kpi-sub" id="avgBatInSub"></div>
       </div>
       <div class="kpi-card mini bat">
-        <div class="kpi-value" id="kpiBatDisp">0</div>
-        <div class="kpi-label">🔋 Battery Dispatched</div>
-      </div>
-      <div class="kpi-card mini bat">
-        <div class="kpi-value red-text" id="kpiBatPend">0</div>
-        <div class="kpi-label">🔋 Battery Pending</div>
+        <div class="kpi-value" id="avgBatOut">—</div>
+        <div class="kpi-label">🔋 Battery Dispatch / Week</div>
+        <div class="kpi-sub" id="avgBatOutSub"></div>
       </div>
       <div class="kpi-card mini chr">
-        <div class="kpi-value" id="kpiChrRcv">0</div>
-        <div class="kpi-label">⚡ Charger Received</div>
+        <div class="kpi-value" id="avgChrIn">—</div>
+        <div class="kpi-label">⚡ Charger Aata / Week</div>
+        <div class="kpi-sub" id="avgChrInSub"></div>
       </div>
       <div class="kpi-card mini chr">
-        <div class="kpi-value" id="kpiChrDisp">0</div>
-        <div class="kpi-label">⚡ Charger Dispatched</div>
+        <div class="kpi-value" id="avgChrOut">—</div>
+        <div class="kpi-label">⚡ Charger Dispatch / Week</div>
+        <div class="kpi-sub" id="avgChrOutSub"></div>
       </div>
-      <div class="kpi-card mini chr">
-        <div class="kpi-value red-text" id="kpiChrPend">0</div>
-        <div class="kpi-label">⚡ Charger Pending</div>
+      <div class="kpi-card mini">
+        <div class="kpi-value" id="avgEntries">—</div>
+        <div class="kpi-label">🗂️ Repair Entries / Week</div>
+        <div class="kpi-sub" id="avgEntriesSub"></div>
+      </div>
+      <div class="kpi-card mini">
+        <div class="kpi-value" id="avgNet">—</div>
+        <div class="kpi-label">📦 Net Backlog Change / Week</div>
+        <div class="kpi-sub" id="avgNetSub">+ matlab pending badh raha hai</div>
       </div>
     </div>
 
-    <!-- SECTION: TODAY & MONTH -->
-    <div class="section-title">📅 Today & This Month</div>
+    <div class="table-card" style="margin-top:12px">
+      <div class="table-scroll">
+        <table class="data-table avg-table" id="avgTable">
+          <thead>
+            <tr>
+              <th>Metric</th><th>Total (Range)</th><th>Per Day</th><th>Per Week</th><th>Per Month</th>
+              <th>This Week</th><th>Last Week</th><th>This Month</th><th>Last Month</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="table-foot">Last Week / Last Month ke saath % = range ke average se kitna upar (▲) ya neeche (▼). This Week / This Month abhi chal rahe hain (partial).</div>
+    </div>
+
+    <!-- TRENDS -->
+    <div class="section-title">
+      📉 Trends
+      <div class="toggle-group">
+        <button class="toggle active" id="gWeek" onclick="setGranularity('week')">Weekly</button>
+        <button class="toggle" id="gMonth" onclick="setGranularity('month')">Monthly</button>
+      </div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card full">
+        <div class="chart-title" id="trendTitle">Received vs Dispatched (Qty)</div>
+        <div class="chart-wrap tall"><canvas id="chTrend"></canvas></div>
+      </div>
+      <div class="chart-card two">
+        <div class="chart-title">Pending Backlog Trend (Qty)</div>
+        <div class="chart-wrap"><canvas id="chBacklog"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Day-wise Pattern (Qty)</div>
+        <div class="chart-wrap"><canvas id="chDow"></canvas></div>
+      </div>
+    </div>
+
+    <!-- BATTERY vs CHARGER -->
+    <div class="section-title">🔋 Battery vs ⚡ Charger <span class="title-note">(range mein aayi entries)</span></div>
+    <div class="kpi-grid six">
+      <div class="kpi-card mini bat"><div class="kpi-value" id="kpiBatRcv">0</div><div class="kpi-label">🔋 Battery Received</div></div>
+      <div class="kpi-card mini bat"><div class="kpi-value" id="kpiBatDisp">0</div><div class="kpi-label">🔋 Battery Dispatched</div></div>
+      <div class="kpi-card mini bat"><div class="kpi-value red-text" id="kpiBatPend">0</div><div class="kpi-label">🔋 Battery Pending</div></div>
+      <div class="kpi-card mini chr"><div class="kpi-value" id="kpiChrRcv">0</div><div class="kpi-label">⚡ Charger Received</div></div>
+      <div class="kpi-card mini chr"><div class="kpi-value" id="kpiChrDisp">0</div><div class="kpi-label">⚡ Charger Dispatched</div></div>
+      <div class="kpi-card mini chr"><div class="kpi-value red-text" id="kpiChrPend">0</div><div class="kpi-label">⚡ Charger Pending</div></div>
+    </div>
+
+    <!-- TODAY & MONTH -->
+    <div class="section-title">📅 Today &amp; This Month <span class="title-note">(filter se independent)</span></div>
     <div class="kpi-grid four">
-      <div class="kpi-card mini">
-        <div class="kpi-value" id="kpiTodayRcv">0</div>
-        <div class="kpi-label">Today Received</div>
+      <div class="kpi-card mini"><div class="kpi-value" id="kpiTodayRcv">0</div><div class="kpi-label">Today Received (Qty)</div><div class="kpi-sub" id="kpiTodayRcvSub"></div></div>
+      <div class="kpi-card mini"><div class="kpi-value" id="kpiTodayDisp">0</div><div class="kpi-label">Today Dispatched (Qty)</div></div>
+      <div class="kpi-card mini"><div class="kpi-value" id="kpiMonthRcv">0</div><div class="kpi-label">This Month Received (Qty)</div><div class="kpi-sub" id="kpiMonthRcvSub"></div></div>
+      <div class="kpi-card mini"><div class="kpi-value" id="kpiMonthDisp">0</div><div class="kpi-label">This Month Dispatched (Qty)</div></div>
+    </div>
+
+    <!-- PERFORMANCE -->
+    <div class="section-title">⏱️ Performance (TAT)</div>
+    <div class="kpi-grid six">
+      <div class="kpi-card mini"><div class="kpi-value" id="perfAvgTat">—</div><div class="kpi-label">Avg TAT (din)</div><div class="kpi-sub">Receive → full dispatch</div></div>
+      <div class="kpi-card mini"><div class="kpi-value" id="perfMedTat">—</div><div class="kpi-label">Median TAT (din)</div><div class="kpi-sub" id="perfTatCount"></div></div>
+      <div class="kpi-card mini"><div class="kpi-value" id="perfOnTime">—</div><div class="kpi-label">On-time %</div><div class="kpi-sub" id="perfOnTimeSub">Est. date se pehle/same din</div></div>
+      <div class="kpi-card mini"><div class="kpi-value" id="perfPendAge">—</div><div class="kpi-label">Avg Pending Age (din)</div><div class="kpi-sub" id="perfPendOldest"></div></div>
+      <div class="kpi-card mini"><div class="kpi-value" id="perfCost">—</div><div class="kpi-label">Total Repair Cost</div><div class="kpi-sub" id="perfCostSub"></div></div>
+      <div class="kpi-card mini"><div class="kpi-value" id="perfAvgCost">—</div><div class="kpi-label">Avg Cost / Paid Repair</div></div>
+    </div>
+    <div class="chart-grid" style="margin-top:12px">
+      <div class="chart-card">
+        <div class="chart-title">TAT Distribution (Completed)</div>
+        <div class="chart-wrap small"><canvas id="chTat"></canvas></div>
       </div>
-      <div class="kpi-card mini">
-        <div class="kpi-value" id="kpiTodayDisp">0</div>
-        <div class="kpi-label">Today Dispatched</div>
+      <div class="chart-card">
+        <div class="chart-title">Pending Aging (Entries)</div>
+        <div class="chart-wrap small"><canvas id="chAging"></canvas></div>
       </div>
-      <div class="kpi-card mini">
-        <div class="kpi-value" id="kpiMonthRcv">0</div>
-        <div class="kpi-label">This Month Received</div>
-      </div>
-      <div class="kpi-card mini">
-        <div class="kpi-value" id="kpiMonthDisp">0</div>
-        <div class="kpi-label">This Month Dispatched</div>
+      <div class="chart-card">
+        <div class="chart-title">Category Mix (Entries)</div>
+        <div class="chart-wrap small"><canvas id="chCategory"></canvas></div>
       </div>
     </div>
 
-    <!-- SECTION: OVERDUE TABLE -->
+    <!-- BREAKDOWNS -->
+    <div class="section-title">🔍 Breakdown</div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <div class="chart-title">Top Problem Types (Entries)</div>
+        <div class="chart-wrap"><canvas id="chProblem"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Battery Model (Qty)</div>
+        <div class="chart-wrap"><canvas id="chModel"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Battery Type (Qty)</div>
+        <div class="chart-wrap"><canvas id="chBType"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Warranty (Entries)</div>
+        <div class="chart-wrap small"><canvas id="chWarranty"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Warranty Claim Status (Entries)</div>
+        <div class="chart-wrap small"><canvas id="chClaim"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title">Received Mode (Entries)</div>
+        <div class="chart-wrap small"><canvas id="chMode"></canvas></div>
+      </div>
+    </div>
+
+    <div class="section-title">🧪 Problem-wise Analysis</div>
+    <div class="table-card">
+      <div class="table-scroll">
+        <table class="data-table" id="problemTable">
+          <thead>
+            <tr><th>Problem Type</th><th>Entries</th><th>Share</th><th>Qty Received</th><th>Completed</th><th>Avg TAT (din)</th><th>Pending Qty</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-title">👥 Top Customers (Qty)</div>
+    <div class="table-card">
+      <div class="table-scroll">
+        <table class="data-table" id="customerTable">
+          <thead>
+            <tr><th>Customer</th><th>Contact</th><th>Entries</th><th>Received</th><th>Dispatched</th><th>Pending</th><th>Last Received</th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section-title">🧑‍🔧 Staff Workload</div>
+    <div class="two-col">
+      <div class="table-card">
+        <div class="table-head">Received By</div>
+        <div class="table-scroll">
+          <table class="data-table narrow" id="rcvByTable">
+            <thead><tr><th>Name</th><th>Entries</th><th>Qty</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-head">Dispatched By</div>
+        <div class="table-scroll">
+          <table class="data-table narrow" id="dispByTable">
+            <thead><tr><th>Name</th><th>Dispatches</th><th>Qty</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="table-empty" id="dispByEmpty" style="display:none">Dispatched By data abhi sheet mein save nahi ho raha (GAS fix lagao).</div>
+      </div>
+    </div>
+
+    <!-- OVERDUE -->
     <div class="section-title red-text">🚨 Overdue Repairs (Action Required)</div>
     <div class="table-card">
       <div class="table-scroll">
         <table class="data-table" id="overdueTable">
           <thead>
-            <tr>
-              <th>Repair ID</th><th>Customer</th><th>Contact</th><th>Category</th>
-              <th>Received</th><th>Est. Dispatch</th><th>Days Late</th><th>Pending Qty</th>
-            </tr>
+            <tr><th>Repair ID</th><th>Customer</th><th>Contact</th><th>Category</th><th>Received</th><th>Est. Dispatch</th><th>Days Late</th><th>Pending Qty</th></tr>
           </thead>
           <tbody></tbody>
         </table>
@@ -239,16 +408,13 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
       <div class="table-empty" id="overdueEmpty" style="display:none">Koi overdue repair nahi hai ✅</div>
     </div>
 
-    <!-- SECTION: PENDING TABLE -->
+    <!-- PENDING -->
     <div class="section-title">⏳ All Pending Repairs</div>
     <div class="table-card">
       <div class="table-scroll">
         <table class="data-table" id="pendingTable">
           <thead>
-            <tr>
-              <th>Repair ID</th><th>Customer</th><th>Category</th><th>Problem</th>
-              <th>Received</th><th>🔋 Pending</th><th>⚡ Pending</th><th>Status</th>
-            </tr>
+            <tr><th>Repair ID</th><th>Customer</th><th>Category</th><th>Problem</th><th>Received</th><th>Age</th><th>🔋 Pending</th><th>⚡ Pending</th><th>Status</th></tr>
           </thead>
           <tbody></tbody>
         </table>
@@ -256,45 +422,72 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
       <div class="table-empty" id="pendingEmpty" style="display:none">Koi pending repair nahi hai ✅</div>
     </div>
 
-    <!-- SECTION: RECENT ENTRIES -->
+    <!-- RECENT -->
     <div class="section-title">🕐 Recent Entries (Last 10)</div>
     <div class="table-card">
       <div class="table-scroll">
         <table class="data-table" id="recentTable">
           <thead>
-            <tr>
-              <th>Repair ID</th><th>Date</th><th>Customer</th><th>Category</th>
-              <th>Problem Type</th><th>Warranty</th><th>Status</th>
-            </tr>
+            <tr><th>Repair ID</th><th>Date</th><th>Customer</th><th>Category</th><th>Problem Type</th><th>Warranty</th><th>Status</th></tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
     </div>
 
-    <div class="footer-note">Litpax Technology — Service Management Dashboard · <span id="lastUpdated"></span></div>
+    <div class="footer-note">Litpax Technology — Service Analytics Dashboard · <span id="lastUpdated"></span></div>
   </div>
-
 </div>
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmmVTbwTDJfiQIVdf0gtg3k4SkAHubhXJe3-eRrVRWX3qQ2v2x7eJGcI3ScacSomxw/exec';
+// =============================================
+// Litpax Service — Shared Config
+// =============================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbzgpq7aM3FjHcINT2nysgo8ayQglh7tohE-qZzth7ORsdUYEGIxbFv-pBfA6mLUIGWx/exec';
+
+// =============================================
+// Litpax Service — Analytics Dashboard
+// API_URL config.js se aata hai
+// Dispatch Log: agar GAS `dispatchLog` array bhejta hai to exact dispatch
+// dates use hongi, warna Repair sheet ki (last) Dispatch Date se approx.
+// =============================================
 
 let allData = [];
+let dispatchLogRaw = null;
+let logIsExact = false;
+let granularity = 'week';
+let lastCtx = null;
+let loadTimer = null;
+const charts = {};
+
+const DAY_MS = 86400000;
+const COL = { bat: '#1a5fd8', chr: '#00b894', batL: '#9dbcf3', chrL: '#93e3cf', red: '#e94560', warn: '#f9a825' };
+const PALETTE = ['#1a5fd8', '#00b894', '#f9a825', '#e94560', '#7c4dff', '#00a8cc', '#ff7043', '#8d6e63', '#26a69a', '#8890b0'];
+const DOW = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
 // ─── INIT ───────────────────────────────────────────────────────────────────
 
 window.onload = function () {
   const now = new Date();
-  const opts = { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' };
   document.getElementById('headerDate').innerHTML =
-    now.toLocaleDateString('en-IN', opts) + '<br>' +
+    now.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) + '<br>' +
     now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
-  document.getElementById('filterFrom').addEventListener('change', applyFilters);
-  document.getElementById('filterTo').addEventListener('change', applyFilters);
+  if (window.Chart) {
+    Chart.defaults.font.family = "'IBM Plex Sans', sans-serif";
+    Chart.defaults.font.size = 11;
+    Chart.defaults.color = '#5a6080';
+  }
+
+  ['filterFrom', 'filterTo'].forEach(id =>
+    document.getElementById(id).addEventListener('change', () => {
+      document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      applyFilters();
+    })
+  );
 
   loadDashboard();
 };
@@ -307,34 +500,44 @@ function loadDashboard() {
   document.getElementById('dashboardContent').style.display = 'none';
 
   window.handleDashboardData = function (result) {
+    clearTimeout(loadTimer);
     document.getElementById('loadingBox').style.display = 'none';
-    allData = result.data || [];
+    allData = (result && result.data) || [];
+    dispatchLogRaw = (result && result.dispatchLog) || null;
     document.getElementById('dashboardContent').style.display = 'block';
     document.getElementById('lastUpdated').textContent =
       'Last updated: ' + new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
     applyFilters();
   };
 
-  var oldScript = document.getElementById('dashScript');
-  if (oldScript) oldScript.remove();
-  var script = document.createElement('script');
-  script.id = 'dashScript';
-  script.onerror = function () {
+  const fail = () => {
+    clearTimeout(loadTimer);
     document.getElementById('loadingBox').style.display = 'none';
     document.getElementById('errorBox').style.display = 'block';
   };
-  script.src = APPS_SCRIPT_URL + '?action=getDashboard&callback=handleDashboardData';
+
+  const old = document.getElementById('dashScript');
+  if (old) old.remove();
+  const script = document.createElement('script');
+  script.id = 'dashScript';
+  script.onerror = fail;
+  script.src = API_URL + '?action=getDashboard&callback=handleDashboardData&_=' + Date.now();
   document.body.appendChild(script);
+
+  clearTimeout(loadTimer);
+  loadTimer = setTimeout(() => {
+    if (document.getElementById('loadingBox').style.display !== 'none') fail();
+  }, 30000);
 }
 
 // ─── HELPERS ────────────────────────────────────────────────────────────────
 
 function num(v) {
-  const n = parseFloat(String(v).replace(/[^0-9.\-]/g, ''));
+  const n = parseFloat(String(v == null ? '' : v).replace(/[^0-9.\-]/g, ''));
   return isNaN(n) ? 0 : n;
 }
 
-// "yyyy-mm-dd", "dd/mm/yyyy", "dd-mm-yyyy" sab handle
+// "yyyy-mm-dd", ISO, "dd/mm/yyyy", "dd-mm-yyyy" sab handle
 function parseDate(str) {
   if (!str) return null;
   str = String(str).trim();
@@ -343,20 +546,43 @@ function parseDate(str) {
   m = str.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})/);
   if (m) return new Date(+m[3], +m[2] - 1, +m[1]);
   const d = new Date(str);
-  return isNaN(d) ? null : d;
+  return isNaN(d) ? null : new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
+
+function dayStart(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+function dayEnd(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 23, 59, 59, 999); }
+function addDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function daysBetween(a, b) { return Math.round((dayStart(b) - dayStart(a)) / DAY_MS); }
+function weekStart(d) { const x = dayStart(d); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; }
+function monthStart(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+function inR(d, a, b) { return !!d && d >= a && d <= dayEnd(b); }
 
 function fmtDate(d) {
   if (!d) return '—';
   return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 }
-
 function sameDay(a, b) {
   return a && b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
-
-function set(id, val) { document.getElementById(id).textContent = val; }
-function sum(rows, key) { return rows.reduce((s, r) => s + (r[key] || 0), 0); }
+function fmtNum(n) { return (Math.round(n * 10) / 10).toLocaleString('en-IN', { maximumFractionDigits: 1 }); }
+function fmtRs(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
+function set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
+function sum(arr, fn) { return arr.reduce((s, x) => s + (fn(x) || 0), 0); }
+function avg(a) { return a.length ? a.reduce((s, x) => s + x, 0) / a.length : null; }
+function median(a) {
+  if (!a.length) return null;
+  const s = [...a].sort((x, y) => x - y), mid = Math.floor(s.length / 2);
+  return s.length % 2 ? s[mid] : (s[mid - 1] + s[mid]) / 2;
+}
+function esc(v) {
+  return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+// appendLog format "yyyy-mm-dd: Name" → sirf names
+function parsePeople(str) {
+  return String(str || '').split('\n')
+    .map(s => s.replace(/^\s*\d{4}-\d{1,2}-\d{1,2}\s*:\s*/, '').trim())
+    .filter(Boolean);
+}
 
 // ─── ROW NORMALIZE (exact sheet columns) ────────────────────────────────────
 
@@ -364,109 +590,506 @@ function normalizeRow(r) {
   let batRcv = num(r['Battery Qty Received']);
   let chrRcv = num(r['Charger Qty Received']);
   const totalRcv = num(r['Total Received Qty']);
-  const batDisp = num(r['Battery Dispatch Qty']);
-  const chrDisp = num(r['Charger Dispatch Qty']);
-  const totalDisp = num(r['Total Dispatched Qty']);
+  let batDisp = num(r['Battery Dispatch Qty']);
+  let chrDisp = num(r['Charger Dispatch Qty']);
+  const totalDisp = num(r['Total Dispatched Qty']) || (batDisp + chrDisp);
 
   // Purani rows fallback (GAS jaisa hi)
   if (batRcv === 0 && chrRcv === 0 && totalRcv > 0) batRcv = totalRcv;
+  if (batDisp === 0 && chrDisp === 0 && totalDisp > 0) batDisp = totalDisp;
 
-  const batPend = Math.max(0, batRcv - batDisp);
-  const chrPend = Math.max(0, chrRcv - chrDisp);
-
-  const sheetPending = String(r['Pending Qty'] || '').trim();
+  const sheetPending = String(r['Pending Qty'] == null ? '' : r['Pending Qty']).trim();
   const pendingQty = sheetPending !== '' ? num(sheetPending) : Math.max(0, (totalRcv || batRcv + chrRcv) - totalDisp);
+
+  const receivingDate = parseDate(r['Receiving Date']);
+  const dispatchDate = parseDate(r['Dispatch Date']);
+  const done = pendingQty <= 0 && totalDisp > 0;
 
   return {
     repairId: String(r['Repair ID'] || '').trim(),
-    receivingDate: parseDate(r['Receiving Date']),
-    dispatchDate: parseDate(r['Dispatch Date']),
+    receivingDate, dispatchDate,
     estDispatchDate: parseDate(r['Estimated Dispatch Date']),
     customer: String(r['Customer Name'] || '').trim(),
     contact: String(r['Contact No'] || '').trim(),
     category: String(r['Category'] || 'Battery').trim(),
     batteryType: String(r['Battery Type'] || '').trim(),
+    batteryModel: String(r['Battery Model'] || '').trim(),
     problemType: String(r['Problem Type'] || '').trim(),
     receivedMode: String(r['Received Mode'] || '').trim(),
     warranty: String(r['Warranty'] || '').trim(),
+    claimStatus: String(r['Warranty Claim Status'] || '').trim(),
     status: String(r['Repair Status'] || 'Received').trim(),
-    batRcv, chrRcv, batDisp, chrDisp, batPend, chrPend, pendingQty,
-    totalRcv: totalRcv || (batRcv + chrRcv), totalDisp
+    receivedBy: String(r['Received By'] || '').trim(),
+    dispatchedBy: parsePeople(r['Dispatched By']),
+    cost: num(r['Any Cost']),
+    batRcv, chrRcv, batDisp, chrDisp,
+    batPend: Math.max(0, batRcv - batDisp),
+    chrPend: Math.max(0, chrRcv - chrDisp),
+    pendingQty,
+    totalRcv: totalRcv || (batRcv + chrRcv),
+    totalDisp,
+    done,
+    tat: done && receivingDate && dispatchDate ? Math.max(0, daysBetween(receivingDate, dispatchDate)) : null
   };
+}
+
+// Dispatch events: Dispatch Log (exact) ya Repair rows (approx)
+function buildDispatchEvents(rows) {
+  if (Array.isArray(dispatchLogRaw) && dispatchLogRaw.length) {
+    logIsExact = true;
+    return dispatchLogRaw.map(e => ({
+      repairId: String(e['Repair ID'] || '').trim(),
+      date: parseDate(e['Dispatch Date']),
+      bat: num(e['Battery Qty']),
+      chr: num(e['Charger Qty']),
+      by: String(e['Dispatched By'] || '').trim(),
+      cost: num(e['Any Cost'])
+    })).filter(e => e.date);
+  }
+  logIsExact = false;
+  return rows
+    .filter(r => r.dispatchDate && (r.batDisp || r.chrDisp))
+    .map(r => ({
+      repairId: r.repairId, date: r.dispatchDate, bat: r.batDisp, chr: r.chrDisp,
+      by: r.dispatchedBy[r.dispatchedBy.length - 1] || '', cost: r.cost
+    }));
 }
 
 // ─── FILTERS ────────────────────────────────────────────────────────────────
 
+function toStr(d) {
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
 function quickFilter(type, btn) {
   document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
   btn.classList.add('active');
-
   const today = new Date();
-  const toStr = d => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
-
-  if (type === 'today') {
-    document.getElementById('filterFrom').value = toStr(today);
-    document.getElementById('filterTo').value = toStr(today);
-  } else if (type === '7d') {
-    const from = new Date(); from.setDate(from.getDate() - 6);
-    document.getElementById('filterFrom').value = toStr(from);
-    document.getElementById('filterTo').value = toStr(today);
-  } else if (type === 'month') {
-    const from = new Date(today.getFullYear(), today.getMonth(), 1);
-    document.getElementById('filterFrom').value = toStr(from);
-    document.getElementById('filterTo').value = toStr(today);
-  } else {
-    document.getElementById('filterFrom').value = '';
-    document.getElementById('filterTo').value = '';
-  }
+  let from = '', to = '';
+  if (type === 'today') { from = to = toStr(today); }
+  else if (type === '7d') { from = toStr(addDays(today, -6)); to = toStr(today); }
+  else if (type === 'month') { from = toStr(monthStart(today)); to = toStr(today); }
+  else if (type === '3m') { from = toStr(new Date(today.getFullYear(), today.getMonth() - 2, 1)); to = toStr(today); }
+  document.getElementById('filterFrom').value = from;
+  document.getElementById('filterTo').value = to;
   applyFilters();
 }
 
 function applyFilters() {
+  const rows = allData.map(normalizeRow).filter(r => r.repairId);
+  const events = buildDispatchEvents(rows);
+  const today = dayStart(new Date());
+
   const fromVal = document.getElementById('filterFrom').value;
   const toVal = document.getElementById('filterTo').value;
-  const from = fromVal ? parseDate(fromVal) : null;
-  const to = toVal ? parseDate(toVal) : null;
-  if (to) to.setHours(23, 59, 59);
+  const hasFilter = !!(fromVal || toVal);
 
-  const rows = allData.map(normalizeRow).filter(r => r.repairId);
-  const filtered = rows.filter(r => {
-    if (!r.receivingDate) return true;
-    if (from && r.receivingDate < from) return false;
-    if (to && r.receivingDate > to) return false;
-    return true;
-  });
+  let from = fromVal ? parseDate(fromVal) : null;
+  if (!from) {
+    const ds = rows.map(r => r.receivingDate).filter(Boolean);
+    from = ds.length ? dayStart(new Date(Math.min.apply(null, ds))) : today;
+  }
+  const to = toVal ? parseDate(toVal) : today;
 
-  renderKPIs(filtered, rows);
-  renderTables(filtered);
+  const fRows = rows.filter(r => r.receivingDate ? inR(r.receivingDate, from, to) : !hasFilter);
+  const fEvents = events.filter(e => inR(e.date, from, to));
+
+  const ctx = { rows, events, fRows, fEvents, from, to, today };
+  lastCtx = ctx;
+
+  document.getElementById('approxNote').style.display = logIsExact ? 'none' : '';
+  set('rangeLabel', fmtDate(from) + ' → ' + fmtDate(to) + '  (' + (daysBetween(from, to) + 1) + ' din)');
+
+  renderKPIs(ctx);
+  renderAverages(ctx);
+  renderTrends(ctx);
+  renderPerformance(ctx);
+  renderBreakdowns(ctx);
+  renderTables(ctx);
+}
+
+function setGranularity(g) {
+  granularity = g;
+  document.getElementById('gWeek').classList.toggle('active', g === 'week');
+  document.getElementById('gMonth').classList.toggle('active', g === 'month');
+  if (lastCtx) renderTrends(lastCtx);
 }
 
 // ─── KPIs ───────────────────────────────────────────────────────────────────
 
-function renderKPIs(rows, allRows) {
-  const today = new Date();
-  const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+function isOverdue(r, today) {
+  return r.pendingQty > 0 && r.estDispatchDate && r.estDispatchDate < today;
+}
 
-  const total = rows.length;
-  const open = rows.filter(r => r.pendingQty > 0).length;
-  const closed = total - open;
-
-  set('kpiTotal', total);
+function renderKPIs({ rows, events, fRows, today }) {
+  const open = fRows.filter(r => r.pendingQty > 0).length;
+  set('kpiTotal', fRows.length);
   set('kpiOpen', open);
-  set('kpiClosed', closed);
+  set('kpiClosed', fRows.length - open);
+  set('kpiOverdue', fRows.filter(r => isOverdue(r, today)).length);
 
-  set('kpiBatRcv', sum(rows, 'batRcv'));
-  set('kpiBatDisp', sum(rows, 'batDisp'));
-  set('kpiBatPend', sum(rows, 'batPend'));
-  set('kpiChrRcv', sum(rows, 'chrRcv'));
-  set('kpiChrDisp', sum(rows, 'chrDisp'));
-  set('kpiChrPend', sum(rows, 'chrPend'));
+  set('kpiBatRcv', sum(fRows, r => r.batRcv));
+  set('kpiBatDisp', sum(fRows, r => r.batDisp));
+  set('kpiBatPend', sum(fRows, r => r.batPend));
+  set('kpiChrRcv', sum(fRows, r => r.chrRcv));
+  set('kpiChrDisp', sum(fRows, r => r.chrDisp));
+  set('kpiChrPend', sum(fRows, r => r.chrPend));
 
-  // Today & Month (allRows pe — filter se independent)
-  set('kpiTodayRcv', allRows.filter(r => sameDay(r.receivingDate, today)).length);
-  set('kpiTodayDisp', allRows.filter(r => sameDay(r.dispatchDate, today)).length);
-  set('kpiMonthRcv', allRows.filter(r => r.receivingDate && r.receivingDate >= monthStart).length);
-  set('kpiMonthDisp', allRows.filter(r => r.dispatchDate && r.dispatchDate >= monthStart).length);
+  // Today & Month — filter se independent, qty mein
+  const ms = monthStart(today);
+  const tRows = rows.filter(r => sameDay(r.receivingDate, today));
+  const mRows = rows.filter(r => inR(r.receivingDate, ms, today));
+  set('kpiTodayRcv', sum(tRows, r => r.batRcv + r.chrRcv));
+  set('kpiTodayRcvSub', tRows.length + ' entries');
+  set('kpiTodayDisp', sum(events.filter(e => sameDay(e.date, today)), e => e.bat + e.chr));
+  set('kpiMonthRcv', sum(mRows, r => r.batRcv + r.chrRcv));
+  set('kpiMonthRcvSub', mRows.length + ' entries');
+  set('kpiMonthDisp', sum(events.filter(e => inR(e.date, ms, today)), e => e.bat + e.chr));
+}
+
+// ─── AVERAGES ───────────────────────────────────────────────────────────────
+
+function renderAverages({ rows, events, fRows, fEvents, from, to, today }) {
+  const days = Math.max(1, daysBetween(from, to) + 1);
+  const weeks = days / 7;
+  const months = days / (365.25 / 12);
+  const canWeek = days >= 7, canMonth = days >= 28;
+
+  const ws = weekStart(today), msd = monthStart(today);
+  const P = {
+    thisWeek: [ws, today],
+    lastWeek: [addDays(ws, -7), addDays(ws, -1)],
+    thisMonth: [msd, today],
+    lastMonth: [new Date(today.getFullYear(), today.getMonth() - 1, 1), addDays(msd, -1)]
+  };
+
+  const rcvIn = (fn) => (a, b) => sum(rows.filter(r => inR(r.receivingDate, a, b)), fn);
+  const dspIn = (fn) => (a, b) => sum(events.filter(e => inR(e.date, a, b)), fn);
+
+  const metrics = [
+    { label: '🗂️ Repair Entries', total: fRows.length, period: rcvIn(() => 1) },
+    { label: '🔋 Battery Received', total: sum(fRows, r => r.batRcv), period: rcvIn(r => r.batRcv) },
+    { label: '⚡ Charger Received', total: sum(fRows, r => r.chrRcv), period: rcvIn(r => r.chrRcv) },
+    { label: '🔋 Battery Dispatched', total: sum(fEvents, e => e.bat), period: dspIn(e => e.bat) },
+    { label: '⚡ Charger Dispatched', total: sum(fEvents, e => e.chr), period: dspIn(e => e.chr) }
+  ];
+
+  const diff = (val, base) => {
+    if (!base) return '';
+    const d = Math.round((val - base) / base * 100);
+    return '<span class="diff ' + (d >= 0 ? 'up' : 'down') + '">' + (d >= 0 ? '▲' : '▼') + Math.abs(d) + '%</span>';
+  };
+
+  document.querySelector('#avgTable tbody').innerHTML = metrics.map(m => {
+    const perDay = m.total / days;
+    const perWeek = canWeek ? m.total / weeks : null;
+    const perMonth = canMonth ? m.total / months : null;
+    const tw = m.period(...P.thisWeek), lw = m.period(...P.lastWeek);
+    const tm = m.period(...P.thisMonth), lm = m.period(...P.lastMonth);
+    return '<tr>' +
+      '<td>' + m.label + '</td>' +
+      '<td>' + fmtNum(m.total) + '</td>' +
+      '<td>' + fmtNum(perDay) + '</td>' +
+      '<td class="hl">' + (perWeek == null ? '—' : fmtNum(perWeek)) + '</td>' +
+      '<td class="hl">' + (perMonth == null ? '—' : fmtNum(perMonth)) + '</td>' +
+      '<td>' + fmtNum(tw) + '</td>' +
+      '<td>' + fmtNum(lw) + (perWeek == null ? '' : diff(lw, perWeek)) + '</td>' +
+      '<td>' + fmtNum(tm) + '</td>' +
+      '<td>' + fmtNum(lm) + (perMonth == null ? '' : diff(lm, perMonth)) + '</td>' +
+    '</tr>';
+  }).join('');
+
+  // Highlight cards
+  const card = (id, total) => {
+    set(id, canWeek ? fmtNum(total / weeks) : '—');
+    set(id + 'Sub',
+      (canMonth ? fmtNum(total / months) + ' / month · ' : '') + fmtNum(total / days) + ' / din');
+  };
+  card('avgBatIn', sum(fRows, r => r.batRcv));
+  card('avgBatOut', sum(fEvents, e => e.bat));
+  card('avgChrIn', sum(fRows, r => r.chrRcv));
+  card('avgChrOut', sum(fEvents, e => e.chr));
+  card('avgEntries', fRows.length);
+
+  const net = sum(fRows, r => r.batRcv + r.chrRcv) - sum(fEvents, e => e.bat + e.chr);
+  const netW = canWeek ? net / weeks : null;
+  const netEl = document.getElementById('avgNet');
+  netEl.textContent = netW == null ? '—' : (netW > 0 ? '+' : '') + fmtNum(netW);
+  netEl.className = 'kpi-value' + (netW > 0 ? ' red-text' : netW < 0 ? ' green-text' : '');
+}
+
+// ─── CHART HELPERS ──────────────────────────────────────────────────────────
+
+function mkChart(id, cfg) {
+  if (!window.Chart) return;
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (charts[id]) charts[id].destroy();
+  charts[id] = new Chart(el, cfg);
+}
+
+const legendBottom = { position: 'bottom', labels: { boxWidth: 10, padding: 12 } };
+
+function countBy(rows, keyFn, valFn, top) {
+  valFn = valFn || (() => 1);
+  top = top || 8;
+  const m = new Map();
+  rows.forEach(r => {
+    const k = String(keyFn(r) || '').trim() || 'Not Set';
+    m.set(k, (m.get(k) || 0) + (valFn(r) || 0));
+  });
+  let arr = [...m.entries()].filter(e => e[1] > 0).sort((a, b) => b[1] - a[1]);
+  if (arr.length > top) {
+    const rest = arr.slice(top).reduce((s, e) => s + e[1], 0);
+    arr = arr.slice(0, top);
+    arr.push(['Others', rest]);
+  }
+  return arr;
+}
+
+function hBar(id, arr, color, label) {
+  mkChart(id, {
+    type: 'bar',
+    data: { labels: arr.map(a => a[0]), datasets: [{ label, data: arr.map(a => a[1]), backgroundColor: color, borderRadius: 4 }] },
+    options: {
+      indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { x: { beginAtZero: true, ticks: { precision: 0 } }, y: { grid: { display: false } } }
+    }
+  });
+}
+
+function doughnut(id, arr) {
+  mkChart(id, {
+    type: 'doughnut',
+    data: { labels: arr.map(a => a[0]), datasets: [{ data: arr.map(a => a[1]), backgroundColor: PALETTE, borderWidth: 2, borderColor: '#fff' }] },
+    options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: legendBottom } }
+  });
+}
+
+function bucketChart(id, labels, data, colors) {
+  mkChart(id, {
+    type: 'bar',
+    data: { labels, datasets: [{ data, backgroundColor: colors, borderRadius: 4 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { grid: { display: false } } }
+    }
+  });
+}
+
+// ─── TRENDS ─────────────────────────────────────────────────────────────────
+
+function renderTrends({ rows, events, fRows, fEvents, from, to }) {
+  const isWeek = granularity === 'week';
+  const N = isWeek ? 26 : 24;
+  const bStart = d => isWeek ? weekStart(d) : monthStart(d);
+  const next = d => isWeek ? addDays(d, 7) : new Date(d.getFullYear(), d.getMonth() + 1, 1);
+
+  let buckets = [];
+  for (let d = bStart(from); d <= to; d = next(d)) buckets.push(d);
+  if (!buckets.length) buckets = [bStart(to)];
+  if (buckets.length > N) buckets = buckets.slice(-N);
+
+  const pos = new Map(buckets.map((b, i) => [b.getTime(), i]));
+  const z = () => buckets.map(() => 0);
+  const batR = z(), chrR = z(), batD = z(), chrD = z();
+
+  fRows.forEach(r => {
+    if (!r.receivingDate) return;
+    const i = pos.get(bStart(r.receivingDate).getTime());
+    if (i != null) { batR[i] += r.batRcv; chrR[i] += r.chrRcv; }
+  });
+  fEvents.forEach(e => {
+    const i = pos.get(bStart(e.date).getTime());
+    if (i != null) { batD[i] += e.bat; chrD[i] += e.chr; }
+  });
+
+  const labels = buckets.map(b => isWeek
+    ? b.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+    : b.toLocaleDateString('en-IN', { month: 'short', year: '2-digit' }));
+
+  set('trendTitle', (isWeek ? 'Weekly' : 'Monthly') + ' Received vs Dispatched (Qty)' + (isWeek ? ' — week Monday se' : ''));
+
+  mkChart('chTrend', {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { label: '🔋 Battery Received', data: batR, backgroundColor: COL.bat, stack: 'rcv', borderRadius: 3 },
+        { label: '⚡ Charger Received', data: chrR, backgroundColor: COL.chr, stack: 'rcv', borderRadius: 3 },
+        { label: '🔋 Battery Dispatched', data: batD, backgroundColor: COL.batL, stack: 'disp', borderRadius: 3 },
+        { label: '⚡ Charger Dispatched', data: chrD, backgroundColor: COL.chrL, stack: 'disp', borderRadius: 3 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: { legend: legendBottom },
+      scales: { x: { stacked: true, grid: { display: false } }, y: { stacked: true, beginAtZero: true, ticks: { precision: 0 } } }
+    }
+  });
+
+  // Backlog: har period ke end pe total pending (saari history se)
+  const today = dayStart(new Date());
+  const backlog = buckets.map(b => {
+    let end = addDays(next(b), -1);
+    if (end > today) end = today;
+    const endT = dayEnd(end);
+    const rcv = sum(rows.filter(r => r.receivingDate && r.receivingDate <= endT), r => r.batRcv + r.chrRcv);
+    const dsp = sum(events.filter(e => e.date <= endT), e => e.bat + e.chr);
+    return Math.max(0, rcv - dsp);
+  });
+
+  mkChart('chBacklog', {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: 'Pending Qty', data: backlog, borderColor: COL.red, backgroundColor: 'rgba(233,69,96,0.08)',
+        fill: true, tension: 0.3, pointRadius: 3
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { grid: { display: false } } }
+    }
+  });
+
+  // Day-of-week
+  const dowR = [0, 0, 0, 0, 0, 0, 0], dowD = [0, 0, 0, 0, 0, 0, 0];
+  fRows.forEach(r => { if (r.receivingDate) dowR[(r.receivingDate.getDay() + 6) % 7] += r.batRcv + r.chrRcv; });
+  fEvents.forEach(e => { dowD[(e.date.getDay() + 6) % 7] += e.bat + e.chr; });
+
+  mkChart('chDow', {
+    type: 'bar',
+    data: {
+      labels: DOW,
+      datasets: [
+        { label: 'Received', data: dowR, backgroundColor: COL.bat, borderRadius: 3 },
+        { label: 'Dispatched', data: dowD, backgroundColor: COL.chr, borderRadius: 3 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: legendBottom },
+      scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { grid: { display: false } } }
+    }
+  });
+}
+
+// ─── PERFORMANCE ────────────────────────────────────────────────────────────
+
+function renderPerformance({ fRows, today }) {
+  const completed = fRows.filter(r => r.tat != null);
+  const tats = completed.map(r => r.tat);
+  const a = avg(tats), md = median(tats);
+  set('perfAvgTat', a == null ? '—' : fmtNum(a));
+  set('perfMedTat', md == null ? '—' : fmtNum(md));
+  set('perfTatCount', completed.length + ' completed repairs');
+
+  const withEst = completed.filter(r => r.estDispatchDate);
+  const onTime = withEst.filter(r => r.dispatchDate <= dayEnd(r.estDispatchDate)).length;
+  set('perfOnTime', withEst.length ? Math.round(onTime / withEst.length * 100) + '%' : '—');
+  set('perfOnTimeSub', withEst.length ? onTime + ' / ' + withEst.length + ' (jinki est. date bhari thi)' : 'Est. date data nahi hai');
+
+  const pend = fRows.filter(r => r.pendingQty > 0 && r.receivingDate);
+  const ages = pend.map(r => Math.max(0, daysBetween(r.receivingDate, today)));
+  const pa = avg(ages);
+  set('perfPendAge', pa == null ? '—' : fmtNum(pa));
+  set('perfPendOldest', ages.length ? 'Sabse purana: ' + Math.max(...ages) + ' din' : '');
+
+  const paid = fRows.filter(r => r.cost > 0);
+  const totalCost = sum(paid, r => r.cost);
+  set('perfCost', paid.length ? fmtRs(totalCost) : '—');
+  set('perfCostSub', paid.length + ' repairs mein cost lagi');
+  set('perfAvgCost', paid.length ? fmtRs(totalCost / paid.length) : '—');
+
+  // TAT distribution
+  const tb = [0, 0, 0, 0, 0];
+  tats.forEach(t => { tb[t <= 3 ? 0 : t <= 7 ? 1 : t <= 15 ? 2 : t <= 30 ? 3 : 4]++; });
+  bucketChart('chTat', ['0–3 din', '4–7', '8–15', '16–30', '30+'], tb,
+    ['#00b894', '#55c9a8', '#f9a825', '#ff7043', '#e94560']);
+
+  // Pending aging
+  const ab = [0, 0, 0, 0, 0];
+  ages.forEach(d => { ab[d <= 7 ? 0 : d <= 15 ? 1 : d <= 30 ? 2 : d <= 60 ? 3 : 4]++; });
+  bucketChart('chAging', ['0–7 din', '8–15', '16–30', '31–60', '60+'], ab,
+    ['#00b894', '#55c9a8', '#f9a825', '#ff7043', '#e94560']);
+
+  doughnut('chCategory', countBy(fRows, r => r.category));
+}
+
+// ─── BREAKDOWNS ─────────────────────────────────────────────────────────────
+
+function renderBreakdowns({ fRows, fEvents }) {
+  hBar('chProblem', countBy(fRows, r => r.problemType, null, 9), COL.bat, 'Entries');
+  hBar('chModel', countBy(fRows.filter(r => r.batRcv > 0), r => r.batteryModel, r => r.batRcv, 9), COL.chr, 'Battery Qty');
+  doughnut('chBType', countBy(fRows.filter(r => r.batRcv > 0), r => r.batteryType, r => r.batRcv, 6));
+  doughnut('chWarranty', countBy(fRows, r => r.warranty, null, 5));
+  doughnut('chClaim', countBy(fRows, r => r.claimStatus, null, 6));
+  doughnut('chMode', countBy(fRows, r => r.receivedMode, null, 6));
+
+  // Problem-wise table
+  const pm = new Map();
+  fRows.forEach(r => {
+    const k = r.problemType || 'Not Set';
+    if (!pm.has(k)) pm.set(k, { n: 0, qty: 0, done: 0, tats: [], pend: 0 });
+    const p = pm.get(k);
+    p.n++; p.qty += r.totalRcv; p.pend += Math.max(0, r.pendingQty);
+    if (r.tat != null) { p.done++; p.tats.push(r.tat); }
+  });
+  const total = fRows.length || 1;
+  document.querySelector('#problemTable tbody').innerHTML = [...pm.entries()]
+    .sort((a, b) => b[1].n - a[1].n)
+    .map(([k, p]) => {
+      const at = avg(p.tats);
+      return '<tr><td>' + esc(k) + '</td><td>' + p.n + '</td><td>' + Math.round(p.n / total * 100) + '%</td><td>' +
+        p.qty + '</td><td>' + p.done + '</td><td>' + (at == null ? '—' : fmtNum(at)) + '</td><td>' +
+        (p.pend ? '<strong class="red-text">' + p.pend + '</strong>' : '0') + '</td></tr>';
+    }).join('') || '<tr><td colspan="7" class="table-empty">Data nahi hai</td></tr>';
+
+  // Top customers
+  const cm = new Map();
+  fRows.forEach(r => {
+    const k = r.customer || 'Not Set';
+    if (!cm.has(k)) cm.set(k, { contact: r.contact, n: 0, rcv: 0, disp: 0, pend: 0, last: null });
+    const c = cm.get(k);
+    c.n++; c.rcv += r.totalRcv; c.disp += r.totalDisp; c.pend += Math.max(0, r.pendingQty);
+    if (r.receivingDate && (!c.last || r.receivingDate > c.last)) c.last = r.receivingDate;
+    if (!c.contact) c.contact = r.contact;
+  });
+  document.querySelector('#customerTable tbody').innerHTML = [...cm.entries()]
+    .sort((a, b) => b[1].rcv - a[1].rcv).slice(0, 10)
+    .map(([k, c]) => '<tr><td>' + esc(k) + '</td><td>' + esc(c.contact || '—') + '</td><td>' + c.n + '</td><td>' +
+      c.rcv + '</td><td>' + c.disp + '</td><td>' + (c.pend ? '<strong class="red-text">' + c.pend + '</strong>' : '0') +
+      '</td><td>' + fmtDate(c.last) + '</td></tr>').join('') ||
+    '<tr><td colspan="7" class="table-empty">Data nahi hai</td></tr>';
+
+  // Received By
+  const rb = new Map();
+  fRows.forEach(r => {
+    const k = r.receivedBy || 'Not Set';
+    if (!rb.has(k)) rb.set(k, { n: 0, q: 0 });
+    rb.get(k).n++; rb.get(k).q += r.totalRcv;
+  });
+  document.querySelector('#rcvByTable tbody').innerHTML = [...rb.entries()]
+    .sort((a, b) => b[1].n - a[1].n)
+    .map(([k, v]) => '<tr><td>' + esc(k) + '</td><td>' + v.n + '</td><td>' + v.q + '</td></tr>').join('');
+
+  // Dispatched By
+  const db = new Map();
+  fEvents.filter(e => e.by).forEach(e => {
+    if (!db.has(e.by)) db.set(e.by, { n: 0, q: 0 });
+    db.get(e.by).n++; db.get(e.by).q += e.bat + e.chr;
+  });
+  const dbRows = [...db.entries()].sort((a, b) => b[1].n - a[1].n);
+  document.querySelector('#dispByTable tbody').innerHTML =
+    dbRows.map(([k, v]) => '<tr><td>' + esc(k) + '</td><td>' + v.n + '</td><td>' + v.q + '</td></tr>').join('');
+  document.getElementById('dispByTable').style.display = dbRows.length ? '' : 'none';
+  document.getElementById('dispByEmpty').style.display = dbRows.length ? 'none' : 'block';
 }
 
 // ─── TABLES ─────────────────────────────────────────────────────────────────
@@ -476,59 +1099,55 @@ function statusBadge(status) {
   if (status === 'Received') cls = 'received';
   else if (status === 'Dispatched') cls = 'dispatched';
   else if (status === 'Partial Dispatch') cls = 'partialdisp';
-  return '<span class="badge ' + cls + '">' + status + '</span>';
+  return '<span class="badge ' + cls + '">' + esc(status) + '</span>';
 }
 
-function renderTables(rows) {
-  const today = new Date();
-
+function renderTables({ fRows, today }) {
   // Overdue
-  const overdue = rows
-    .filter(r => r.pendingQty > 0 && r.estDispatchDate && r.estDispatchDate < today && !sameDay(r.estDispatchDate, today))
-    .sort((a, b) => a.estDispatchDate - b.estDispatchDate);
-  const oBody = document.querySelector('#overdueTable tbody');
-  oBody.innerHTML = overdue.map(r => {
-    const daysLate = Math.floor((today - r.estDispatchDate) / 86400000);
-    return '<tr>' +
-      '<td class="mono">' + r.repairId + '</td>' +
-      '<td>' + r.customer + '</td>' +
-      '<td>' + r.contact + '</td>' +
-      '<td>' + r.category + '</td>' +
+  const overdue = fRows.filter(r => isOverdue(r, today)).sort((a, b) => a.estDispatchDate - b.estDispatchDate);
+  document.querySelector('#overdueTable tbody').innerHTML = overdue.map(r =>
+    '<tr>' +
+      '<td class="mono">' + esc(r.repairId) + '</td>' +
+      '<td>' + esc(r.customer) + '</td>' +
+      '<td>' + esc(r.contact) + '</td>' +
+      '<td>' + esc(r.category) + '</td>' +
       '<td>' + fmtDate(r.receivingDate) + '</td>' +
       '<td>' + fmtDate(r.estDispatchDate) + '</td>' +
-      '<td><span class="badge late">' + daysLate + ' din</span></td>' +
+      '<td><span class="badge late">' + daysBetween(r.estDispatchDate, today) + ' din</span></td>' +
       '<td><strong>' + r.pendingQty + '</strong></td>' +
-    '</tr>';
-  }).join('');
+    '</tr>').join('');
   document.getElementById('overdueTable').style.display = overdue.length ? '' : 'none';
   document.getElementById('overdueEmpty').style.display = overdue.length ? 'none' : 'block';
 
-  // Pending
-  const pending = rows.filter(r => r.pendingQty > 0).sort((a, b) => (a.receivingDate || 0) - (b.receivingDate || 0));
-  const pBody = document.querySelector('#pendingTable tbody');
-  pBody.innerHTML = pending.map(r => '<tr>' +
-      '<td class="mono">' + r.repairId + '</td>' +
-      '<td>' + r.customer + '</td>' +
-      '<td>' + r.category + '</td>' +
-      '<td>' + (r.problemType || '—') + '</td>' +
+  // Pending (sabse purana upar)
+  const pending = fRows.filter(r => r.pendingQty > 0).sort((a, b) => (a.receivingDate || 0) - (b.receivingDate || 0));
+  document.querySelector('#pendingTable tbody').innerHTML = pending.map(r => {
+    const age = r.receivingDate ? daysBetween(r.receivingDate, today) : null;
+    return '<tr>' +
+      '<td class="mono">' + esc(r.repairId) + '</td>' +
+      '<td>' + esc(r.customer) + '</td>' +
+      '<td>' + esc(r.category) + '</td>' +
+      '<td>' + esc(r.problemType || '—') + '</td>' +
       '<td>' + fmtDate(r.receivingDate) + '</td>' +
+      '<td>' + (age == null ? '—' : '<span class="badge age' + (age > 15 ? ' old' : '') + '">' + age + ' din</span>') + '</td>' +
       '<td>' + r.batPend + '</td>' +
       '<td>' + r.chrPend + '</td>' +
       '<td>' + statusBadge(r.status) + '</td>' +
-    '</tr>').join('');
+    '</tr>';
+  }).join('');
   document.getElementById('pendingTable').style.display = pending.length ? '' : 'none';
   document.getElementById('pendingEmpty').style.display = pending.length ? 'none' : 'block';
 
   // Recent 10
-  const recent = [...rows].sort((a, b) => (b.receivingDate || 0) - (a.receivingDate || 0)).slice(0, 10);
-  const rBody = document.querySelector('#recentTable tbody');
-  rBody.innerHTML = recent.map(r => '<tr>' +
-      '<td class="mono">' + r.repairId + '</td>' +
+  const recent = [...fRows].sort((a, b) => (b.receivingDate || 0) - (a.receivingDate || 0)).slice(0, 10);
+  document.querySelector('#recentTable tbody').innerHTML = recent.map(r =>
+    '<tr>' +
+      '<td class="mono">' + esc(r.repairId) + '</td>' +
       '<td>' + fmtDate(r.receivingDate) + '</td>' +
-      '<td>' + r.customer + '</td>' +
-      '<td>' + r.category + '</td>' +
-      '<td>' + (r.problemType || '—') + '</td>' +
-      '<td>' + (r.warranty || '—') + '</td>' +
+      '<td>' + esc(r.customer) + '</td>' +
+      '<td>' + esc(r.category) + '</td>' +
+      '<td>' + esc(r.problemType || '—') + '</td>' +
+      '<td>' + esc(r.warranty || '—') + '</td>' +
       '<td>' + statusBadge(r.status) + '</td>' +
     '</tr>').join('');
 }
