@@ -371,70 +371,6 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
       </div>
     </div>
 
-    <div class="section-title">🧑‍🔧 Staff Workload</div>
-    <div class="two-col">
-      <div class="table-card">
-        <div class="table-head">Received By</div>
-        <div class="table-scroll">
-          <table class="data-table narrow" id="rcvByTable">
-            <thead><tr><th>Name</th><th>Entries</th><th>Qty</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-      <div class="table-card">
-        <div class="table-head">Dispatched By</div>
-        <div class="table-scroll">
-          <table class="data-table narrow" id="dispByTable">
-            <thead><tr><th>Name</th><th>Dispatches</th><th>Qty</th></tr></thead>
-            <tbody></tbody>
-          </table>
-        </div>
-        <div class="table-empty" id="dispByEmpty" style="display:none">Dispatched By data abhi sheet mein save nahi ho raha (GAS fix lagao).</div>
-      </div>
-    </div>
-
-    <!-- OVERDUE -->
-    <div class="section-title red-text">🚨 Overdue Repairs (Action Required)</div>
-    <div class="table-card">
-      <div class="table-scroll">
-        <table class="data-table" id="overdueTable">
-          <thead>
-            <tr><th>Repair ID</th><th>Customer</th><th>Contact</th><th>Category</th><th>Received</th><th>Est. Dispatch</th><th>Days Late</th><th>Pending Qty</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div class="table-empty" id="overdueEmpty" style="display:none">Koi overdue repair nahi hai ✅</div>
-    </div>
-
-    <!-- PENDING -->
-    <div class="section-title">⏳ All Pending Repairs</div>
-    <div class="table-card">
-      <div class="table-scroll">
-        <table class="data-table" id="pendingTable">
-          <thead>
-            <tr><th>Repair ID</th><th>Customer</th><th>Category</th><th>Problem</th><th>Received</th><th>Age</th><th>🔋 Pending</th><th>⚡ Pending</th><th>Status</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <div class="table-empty" id="pendingEmpty" style="display:none">Koi pending repair nahi hai ✅</div>
-    </div>
-
-    <!-- RECENT -->
-    <div class="section-title">🕐 Recent Entries (Last 10)</div>
-    <div class="table-card">
-      <div class="table-scroll">
-        <table class="data-table" id="recentTable">
-          <thead>
-            <tr><th>Repair ID</th><th>Date</th><th>Customer</th><th>Category</th><th>Problem Type</th><th>Warranty</th><th>Status</th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </div>
-
     <div class="footer-note">Litpax Technology — Service Analytics Dashboard · <span id="lastUpdated"></span></div>
   </div>
 </div>
@@ -446,7 +382,7 @@ body{font-family:'IBM Plex Sans',sans-serif;background:var(--surface2);color:var
 // =============================================
 // Litpax Service — Shared Config
 // =============================================
-const API_URL = 'https://script.google.com/macros/s/AKfycbzmmVTbwTDJfiQIVdf0gtg3k4SkAHubhXJe3-eRrVRWX3qQ2v2x7eJGcI3ScacSomxw/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzgpq7aM3FjHcINT2nysgo8ayQglh7tohE-qZzth7ORsdUYEGIxbFv-pBfA6mLUIGWx/exec';
 
 // =============================================
 // Litpax Service — Analytics Dashboard
@@ -564,7 +500,7 @@ function fmtDate(d) {
 function sameDay(a, b) {
   return a && b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate();
 }
-function fmtNum(n) { return (Math.round(n * 10) / 10).toLocaleString('en-IN', { maximumFractionDigits: 1 }); }
+function fmtNum(n) { return Math.round(n).toLocaleString('en-IN'); }
 function fmtRs(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
 function set(id, val) { const el = document.getElementById(id); if (el) el.textContent = val; }
 function sum(arr, fn) { return arr.reduce((s, x) => s + (fn(x) || 0), 0); }
@@ -705,7 +641,6 @@ function applyFilters() {
   renderTrends(ctx);
   renderPerformance(ctx);
   renderBreakdowns(ctx);
-  renderTables(ctx);
 }
 
 function setGranularity(g) {
@@ -1067,89 +1002,6 @@ function renderBreakdowns({ fRows, fEvents }) {
       c.rcv + '</td><td>' + c.disp + '</td><td>' + (c.pend ? '<strong class="red-text">' + c.pend + '</strong>' : '0') +
       '</td><td>' + fmtDate(c.last) + '</td></tr>').join('') ||
     '<tr><td colspan="7" class="table-empty">Data nahi hai</td></tr>';
-
-  // Received By
-  const rb = new Map();
-  fRows.forEach(r => {
-    const k = r.receivedBy || 'Not Set';
-    if (!rb.has(k)) rb.set(k, { n: 0, q: 0 });
-    rb.get(k).n++; rb.get(k).q += r.totalRcv;
-  });
-  document.querySelector('#rcvByTable tbody').innerHTML = [...rb.entries()]
-    .sort((a, b) => b[1].n - a[1].n)
-    .map(([k, v]) => '<tr><td>' + esc(k) + '</td><td>' + v.n + '</td><td>' + v.q + '</td></tr>').join('');
-
-  // Dispatched By
-  const db = new Map();
-  fEvents.filter(e => e.by).forEach(e => {
-    if (!db.has(e.by)) db.set(e.by, { n: 0, q: 0 });
-    db.get(e.by).n++; db.get(e.by).q += e.bat + e.chr;
-  });
-  const dbRows = [...db.entries()].sort((a, b) => b[1].n - a[1].n);
-  document.querySelector('#dispByTable tbody').innerHTML =
-    dbRows.map(([k, v]) => '<tr><td>' + esc(k) + '</td><td>' + v.n + '</td><td>' + v.q + '</td></tr>').join('');
-  document.getElementById('dispByTable').style.display = dbRows.length ? '' : 'none';
-  document.getElementById('dispByEmpty').style.display = dbRows.length ? 'none' : 'block';
-}
-
-// ─── TABLES ─────────────────────────────────────────────────────────────────
-
-function statusBadge(status) {
-  let cls = 'other';
-  if (status === 'Received') cls = 'received';
-  else if (status === 'Dispatched') cls = 'dispatched';
-  else if (status === 'Partial Dispatch') cls = 'partialdisp';
-  return '<span class="badge ' + cls + '">' + esc(status) + '</span>';
-}
-
-function renderTables({ fRows, today }) {
-  // Overdue
-  const overdue = fRows.filter(r => isOverdue(r, today)).sort((a, b) => a.estDispatchDate - b.estDispatchDate);
-  document.querySelector('#overdueTable tbody').innerHTML = overdue.map(r =>
-    '<tr>' +
-      '<td class="mono">' + esc(r.repairId) + '</td>' +
-      '<td>' + esc(r.customer) + '</td>' +
-      '<td>' + esc(r.contact) + '</td>' +
-      '<td>' + esc(r.category) + '</td>' +
-      '<td>' + fmtDate(r.receivingDate) + '</td>' +
-      '<td>' + fmtDate(r.estDispatchDate) + '</td>' +
-      '<td><span class="badge late">' + daysBetween(r.estDispatchDate, today) + ' din</span></td>' +
-      '<td><strong>' + r.pendingQty + '</strong></td>' +
-    '</tr>').join('');
-  document.getElementById('overdueTable').style.display = overdue.length ? '' : 'none';
-  document.getElementById('overdueEmpty').style.display = overdue.length ? 'none' : 'block';
-
-  // Pending (sabse purana upar)
-  const pending = fRows.filter(r => r.pendingQty > 0).sort((a, b) => (a.receivingDate || 0) - (b.receivingDate || 0));
-  document.querySelector('#pendingTable tbody').innerHTML = pending.map(r => {
-    const age = r.receivingDate ? daysBetween(r.receivingDate, today) : null;
-    return '<tr>' +
-      '<td class="mono">' + esc(r.repairId) + '</td>' +
-      '<td>' + esc(r.customer) + '</td>' +
-      '<td>' + esc(r.category) + '</td>' +
-      '<td>' + esc(r.problemType || '—') + '</td>' +
-      '<td>' + fmtDate(r.receivingDate) + '</td>' +
-      '<td>' + (age == null ? '—' : '<span class="badge age' + (age > 15 ? ' old' : '') + '">' + age + ' din</span>') + '</td>' +
-      '<td>' + r.batPend + '</td>' +
-      '<td>' + r.chrPend + '</td>' +
-      '<td>' + statusBadge(r.status) + '</td>' +
-    '</tr>';
-  }).join('');
-  document.getElementById('pendingTable').style.display = pending.length ? '' : 'none';
-  document.getElementById('pendingEmpty').style.display = pending.length ? 'none' : 'block';
-
-  // Recent 10
-  const recent = [...fRows].sort((a, b) => (b.receivingDate || 0) - (a.receivingDate || 0)).slice(0, 10);
-  document.querySelector('#recentTable tbody').innerHTML = recent.map(r =>
-    '<tr>' +
-      '<td class="mono">' + esc(r.repairId) + '</td>' +
-      '<td>' + fmtDate(r.receivingDate) + '</td>' +
-      '<td>' + esc(r.customer) + '</td>' +
-      '<td>' + esc(r.category) + '</td>' +
-      '<td>' + esc(r.problemType || '—') + '</td>' +
-      '<td>' + esc(r.warranty || '—') + '</td>' +
-      '<td>' + statusBadge(r.status) + '</td>' +
-    '</tr>').join('');
 }
 
 // ─── TOAST ──────────────────────────────────────────────────────────────────
